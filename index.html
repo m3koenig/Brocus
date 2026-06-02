@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Split-Screen Study Timer</title>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -14,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNwbGl0LVNjcmVlbiBTdHVkeSBUaW1lciIsCiAgInNob3J0X25hbWUiOiAiU3BsaXRUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFlM2E4YSIsCiAgInRoZW1lX2NvbG9yIjogIiMxZTNhOGEiCn0=">
+    <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
@@ -307,6 +308,13 @@
     </div>
 
     <script>
+        // PWA Service Worker Registrierung
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js');
+        });
+        }
+
         // --- KONFIGURATION & THEMES ---
         const THEMES = {
             classic: { fBg: '#855E4D', fTxt: '#F5E2DA', bBg: '#F5E2DA', bTxt: '#855E4D' },
