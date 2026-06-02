@@ -14,15 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNwbGl0LVNjcmVlbiBTdHVkeSBUaW1lciIsCiAgInNob3J0X25hbWUiOiAiU3BsaXRUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjODU1RTREIiwKICAidGhlbWVfY29sb3IiOiAiIzg1NUU0RCIKfQ==">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNwbGl0LVNjcmVlbiBTdHVkeSBUaW1lciIsCiAgInNob3J0X25hbWUiOiAiU3BsaXRUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFlM2E4YSIsCiAgInRoZW1lX2NvbG9yIjogIiMxZTNhOGEiCn0=">
 
     <style>
         :root {
-            /* Standard-Theme: Classic (v1.0.0 inspiriert) */
-            --focus-bg: #855E4D;
-            --focus-text: #F5E2DA;
-            --break-bg: #F5E2DA;
-            --break-text: #855E4D;
+            /* Standard-Theme jetzt: Deep Sea (Blau) */
+            --focus-bg: #1e3a8a;
+            --focus-text: #bfdbfe;
+            --break-bg: #bfdbfe;
+            --break-text: #1e3a8a;
             --accent: #10b981; /* emerald-500 */
         }
 
@@ -157,18 +157,18 @@
 
     <!-- EINSTELLUNGEN MODAL -->
     <div id="modal-settings" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-stone-900 border border-stone-800 rounded-3xl p-6 w-[90%] max-w-md shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6">
+        <div class="bg-stone-900 border border-stone-800 rounded-3xl p-6 w-[95%] max-w-lg shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold">Konfiguration</h3>
                 <button onclick="toggleSettingsModal(false)" class="text-stone-400 hover:text-white">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
 
-            <div class="settings-scroll overflow-y-auto pr-2 space-y-6">
+            <div class="settings-scroll overflow-y-auto pr-2 space-y-5 flex-1">
                 <!-- Farb-Themes -->
                 <div>
-                    <label class="block text-sm font-medium text-stone-400 mb-3">Farb-Theme</label>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2">Farb-Theme</label>
                     <div class="grid grid-cols-4 gap-3">
                         <button onclick="setTheme('classic')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Classic">
                             <div class="w-1/2 h-full" style="background:#855E4D"></div><div class="w-1/2 h-full" style="background:#F5E2DA"></div>
@@ -180,47 +180,119 @@
                             <div class="w-1/2 h-full" style="background:#064e3b"></div><div class="w-1/2 h-full" style="background:#d1fae5"></div>
                         </button>
                         <button onclick="setTheme('midnight')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Midnight">
-                            <div class="w-1/2 h-full" style="background:#171717"></div><div class="w-1/2 h-full" style="background:#525252"></div>
+                            <div class="w-1/2 h-full" style="background:#171717"></div><div class="w-1/2 h-full" style="background:#404040"></div>
                         </button>
                     </div>
                 </div>
 
                 <!-- Zeiteinstellungen -->
-                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-stone-800">
+                <div class="grid grid-cols-2 gap-4 pt-3 border-t border-stone-800">
                     <div>
-                        <label class="block text-sm font-medium text-stone-400 mb-2">Fokus (Min)</label>
-                        <input type="number" id="input-focus-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1.5">Fokus Dauer (Min)</label>
+                        <input type="number" id="input-focus-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-stone-400 mb-2">Pause (Min)</label>
-                        <input type="number" id="input-break-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1.5">Pause Dauer (Min)</label>
+                        <input type="number" id="input-break-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-white">
                     </div>
                 </div>
 
-                <!-- Sound & Volumen -->
-                <div class="space-y-4 pt-4 border-t border-stone-800">
-                    <div>
-                        <label class="block text-sm font-medium text-stone-400 mb-2">Ambient-Typ</label>
-                        <select id="select-ambient-type" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
-                            <option value="brown">Brown Noise (Tiefer Fokus)</option>
-                            <option value="pink">Rosa Rauschen (Ausgewogen)</option>
-                            <option value="white">Weißes Rauschen (Klassisch)</option>
-                            <option value="rain">Sommerregen (Beruhigend)</option>
-                            <option value="waves">Meeresrauschen (Sanfte Wellen)</option>
-                            <option value="fireplace">Kaminfeuer (Gemütliches Knistern)</option>
-                        </select>
+                <!-- FOKUS INTERVALL SOUNDS -->
+                <div class="space-y-3 pt-3 border-t border-stone-800">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Fokus-Phase</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs text-stone-400">Ambient-Typ</label>
+                                <button id="btn-preview-ambient-focus" onclick="togglePreviewAmbient('focus')" class="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-500/10 px-1.5 py-0.5 rounded transition-all select-none">
+                                    <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>Testen</span>
+                                </button>
+                            </div>
+                            <select id="select-focus-ambient-type" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                                <option value="brown">Brown Noise (Tiefer Fokus)</option>
+                                <option value="pink">Rosa Rauschen (Ausgewogen)</option>
+                                <option value="white">Weißes Rauschen (Klassisch)</option>
+                                <option value="rain">Sommerregen (Beruhigend)</option>
+                                <option value="waves">Meeresrauschen (Wellen)</option>
+                                <option value="fireplace">Kaminfeuer (Knistern)</option>
+                                <option value="lofi">Lofi Ambient Track 🎵</option>
+                                <option value="space">Cosmic Drone 🌌</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs text-stone-400">Wechsel-Alarm</label>
+                                <button onclick="triggerAlarmPreview('focus')" class="text-[10px] text-emerald-400 hover:text-emerald-300 flex items-center gap-1 bg-emerald-500/10 px-1.5 py-0.5 rounded transition-all select-none">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><span>Hören</span>
+                                </button>
+                            </div>
+                            <select id="select-focus-end-sound" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                                <option value="bell">Klassische Glocke 🔔</option>
+                                <option value="digital">Digitaler Wecker ⏰</option>
+                                <option value="harp">Sanfte Harfe 🎵</option>
+                                <option value="triumph">Triumph Arpeggio 🎉</option>
+                                <option value="none">Stumm 🔇</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="text-stone-400 uppercase tracking-wider">Lautstärke Ambient</span>
-                            <span id="label-ambient-vol" class="text-white">30%</span>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-stone-400 uppercase tracking-wider">Lautstärke Fokus Ambient</span>
+                            <span id="label-focus-ambient-vol" class="text-white">30%</span>
                         </div>
-                        <input type="range" id="range-ambient-vol" min="0" max="100" class="w-full h-1.5 bg-stone-800 rounded-lg appearance-none accent-emerald-500">
+                        <input type="range" id="range-focus-ambient-vol" min="0" max="100" class="w-full h-1 bg-stone-800 rounded-lg appearance-none accent-emerald-500">
+                    </div>
+                </div>
+
+                <!-- PAUSEN INTERVALL SOUNDS -->
+                <div class="space-y-3 pt-3 border-t border-stone-800">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-400">Pausen-Phase</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs text-stone-400">Ambient-Typ</label>
+                                <button id="btn-preview-ambient-break" onclick="togglePreviewAmbient('break')" class="text-[10px] text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded transition-all select-none">
+                                    <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>Testen</span>
+                                </button>
+                            </div>
+                            <select id="select-break-ambient-type" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                                <option value="brown">Brown Noise (Tiefer Fokus)</option>
+                                <option value="pink">Rosa Rauschen (Ausgewogen)</option>
+                                <option value="white">Weißes Rauschen (Klassisch)</option>
+                                <option value="rain">Sommerregen (Beruhigend)</option>
+                                <option value="waves">Meeresrauschen (Wellen)</option>
+                                <option value="fireplace">Kaminfeuer (Knistern)</option>
+                                <option value="lofi">Lofi Ambient Track 🎵</option>
+                                <option value="space">Cosmic Drone 🌌</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs text-stone-400">Wechsel-Alarm</label>
+                                <button onclick="triggerAlarmPreview('break')" class="text-[10px] text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-500/10 px-1.5 py-0.5 rounded transition-all select-none">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><span>Hören</span>
+                                </button>
+                            </div>
+                            <select id="select-break-end-sound" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                                <option value="bell">Klassische Glocke 🔔</option>
+                                <option value="digital">Digitaler Wecker ⏰</option>
+                                <option value="harp">Sanfte Harfe 🎵</option>
+                                <option value="triumph">Triumph Arpeggio 🎉</option>
+                                <option value="none">Stumm 🔇</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[11px] mb-1">
+                            <span class="text-stone-400 uppercase tracking-wider">Lautstärke Pause Ambient</span>
+                            <span id="label-break-ambient-vol" class="text-white">30%</span>
+                        </div>
+                        <input type="range" id="range-break-ambient-vol" min="0" max="100" class="w-full h-1 bg-stone-800 rounded-lg appearance-none accent-rose-500">
                     </div>
                 </div>
             </div>
 
-            <button onclick="saveSettings()" class="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-colors">
+            <button onclick="saveSettings()" class="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl transition-colors">
                 Anwenden & Speichern
             </button>
         </div>
@@ -243,11 +315,20 @@
             currentMode: 'focus',
             isRunning: false,
             autoSwitch: true,
-            ambientVolume: 0.3,
             bellVolume: 0.7,
-            ambientType: 'brown',
             isAmbientPlaying: false,
-            activeTheme: 'classic',
+            activeTheme: 'sea', // Standardtheme: Sea (Blau)
+            
+            // Getrennte Ambient-Konfiguration für Fokus und Pause
+            focusAmbientType: 'brown',
+            breakAmbientType: 'rain',
+            focusAmbientVolume: 0.3,
+            breakAmbientVolume: 0.3,
+            
+            // Getrennte Phasenende-Alarme
+            focusEndSound: 'bell',
+            breakEndSound: 'harp',
+            
             // Intervall-Zeitstempel
             startTimestamp: null,
             endTimestamp: null
@@ -258,6 +339,11 @@
         let ambientSource = null;
         let ambientGainNode = null;
         let isEditingInline = false; // Flag um Klicks während der Editierung zu blocken
+
+        // Modal Audio Preview Variablen
+        let previewSource = null;
+        let previewGainNode = null;
+        let activePreviewPhase = null;
 
         // --- THEME MANAGEMENT ---
         function setTheme(themeKey) {
@@ -276,7 +362,8 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        function playBellSound() {
+        function playAlarmSound(soundType) {
+            if (soundType === 'none') return;
             initAudio();
             const now = audioCtx.currentTime;
             const mainGain = audioCtx.createGain();
@@ -285,30 +372,84 @@
             mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
             mainGain.connect(audioCtx.destination);
 
-            [220, 330, 440, 554, 880].forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const g = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, now);
-                g.gain.setValueAtTime(0.5 / (i + 1), now);
-                g.gain.exponentialRampToValueAtTime(0.0001, now + (4.0 / (i + 1)));
-                osc.connect(g); g.connect(mainGain);
-                osc.start(); osc.stop(now + 4.0);
-            });
+            if (soundType === 'bell') {
+                // Klassischer harmonischer Glockenschlag
+                [220, 330, 440, 554, 880].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    g.gain.setValueAtTime(0.5 / (i + 1), now);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + (4.0 / (i + 1)));
+                    osc.connect(g); g.connect(mainGain);
+                    osc.start(); osc.stop(now + 4.0);
+                });
+            } else if (soundType === 'digital') {
+                // Digitaler Beep-Alarm (Beep-Beep-Beep)
+                const delays = [0, 0.25, 0.5];
+                delays.forEach(delay => {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(950, now + delay);
+                    g.gain.setValueAtTime(0, now + delay);
+                    g.gain.linearRampToValueAtTime(0.3, now + delay + 0.01);
+                    g.gain.setValueAtTime(0.3, now + delay + 0.12);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + delay + 0.15);
+                    osc.connect(g); g.connect(mainGain);
+                    osc.start(now + delay); osc.stop(now + delay + 0.2);
+                });
+            } else if (soundType === 'harp') {
+                // Harfen-Akkord arpeggiert (Soothing Harp Chord in C-Dur)
+                const harpFreqs = [261.63, 329.63, 392.00, 523.25, 659.25];
+                harpFreqs.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.15);
+                    g.gain.setValueAtTime(0, now + idx * 0.15);
+                    g.gain.linearRampToValueAtTime(0.25, now + idx * 0.15 + 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.15 + 1.6);
+                    osc.connect(g); g.connect(mainGain);
+                    osc.start(now + idx * 0.15); osc.stop(now + idx * 0.15 + 2.0);
+                });
+            } else if (soundType === 'triumph') {
+                // Triumphales Aufwärts-Arpeggio (Heroischer Synthesizer-Akkord)
+                const notes = [196.00, 246.94, 293.66, 392.00, 493.88, 587.33];
+                notes.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    const filter = audioCtx.createBiquadFilter();
+                    
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1400, now);
+                    
+                    g.gain.setValueAtTime(0, now + idx * 0.08);
+                    g.gain.linearRampToValueAtTime(0.15, now + idx * 0.08 + 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 1.4);
+                    
+                    osc.connect(filter); filter.connect(g); g.connect(mainGain);
+                    osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 1.8);
+                });
+            }
         }
 
         function createNoiseBuffer(type) {
-            // Eine 10-Sekunden-Schleife für exzellente und nahtlose atmosphärische Modulationen
             const duration = 10;
-            const bufferSize = duration * audioCtx.sampleRate;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const sampleRate = audioCtx.sampleRate;
+            const bufferSize = duration * sampleRate;
+            const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
             const data = buffer.getChannelData(0);
             
-            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0; // Rosa Filter
-            let lastOut = 0.0; // Braunes Filter
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0; // Rosa Rauschen Filter
+            let lastOut = 0.0; // Braunes Rauschen Filter
 
             for (let i = 0; i < bufferSize; i++) {
                 const white = Math.random() * 2 - 1;
+                const t = i / sampleRate;
                 
                 if (type === 'white') {
                     data[i] = white * 0.35;
@@ -339,12 +480,10 @@
                     let pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
                     b6 = white * 0.115926;
                     
-                    // Feine, dynamisch auftreffende Regentropfen (Knistern im Hochfrequenzbereich)
                     const droplet = Math.random() > 0.9985 ? (Math.random() * 0.35) : 0;
                     data[i] = (pink * 0.06) + droplet;
                 } 
                 else if (type === 'waves') {
-                    // Meeresrauschen: Rosa Rauschen moduliert durch eine periodische Sinus-Swell-Kurve
                     b0 = 0.99886 * b0 + white * 0.0555179;
                     b1 = 0.99332 * b1 + white * 0.0750759;
                     b2 = 0.96900 * b2 + white * 0.1538520;
@@ -354,22 +493,60 @@
                     let pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
                     b6 = white * 0.115926;
                     
-                    const t = i / audioCtx.sampleRate;
-                    // Sanfter LFO-Zyklus von 10 Sekunden (An- und Abschwellen)
                     const lfo = 0.55 + 0.45 * Math.sin((2 * Math.PI * t) / duration - Math.PI / 2);
                     data[i] = pink * 0.07 * lfo;
                 } 
                 else if (type === 'fireplace') {
-                    // Kaminfeuer: Warmes Braunes Rauschen mit unregelmäßigen Holzknister-Spikes
                     data[i] = (lastOut + (0.018 * white)) / 1.018;
                     lastOut = data[i];
                     data[i] *= 0.65;
                     
-                    // Sporadische, explosive Holzknisterer
                     if (Math.random() > 0.9995) {
                         data[i] += (Math.random() * 2 - 1) * 0.28;
                     }
-                }
+                } 
+                else if (type === 'lofi') {
+                    // Lofi Chords (Em7 -> Am7 -> Dm7 -> G7) - Ohne jegliches Rauschen
+                    const lofiChords = [
+                        [164.81, 196.00, 246.94, 293.66], // Em7
+                        [220.00, 261.63, 329.63, 392.00], // Am7
+                        [146.83, 174.61, 220.00, 261.63], // Dm7
+                        [196.00, 246.94, 293.66, 349.23]  // G7
+                    ];
+                    let chordIdx = Math.floor(t / 2.5) % 4;
+                    let chordTime = t % 2.5;
+                    
+                    let env = 1.0;
+                    if (chordTime < 0.3) env = chordTime / 0.3;
+                    else if (chordTime > 2.2) env = (2.5 - chordTime) / 0.3;
+
+                    let waveSum = 0;
+                    const freqs = lofiChords[chordIdx];
+                    freqs.forEach(f => {
+                        waveSum += Math.sin(2 * Math.PI * f * t) * 0.22;
+                    });
+
+                    // Weiches Vinylknistern bleibt für die Atmosphäre erhalten, weißes Hiss-Rauschen entfernt
+                    let crackle = 0;
+                    if (Math.random() > 0.9996) {
+                        crackle = (Math.random() * 2 - 1) * 0.4;
+                    }
+
+                    data[i] = (waveSum * env * 0.15) + crackle * 0.03;
+                } 
+                else if (type === 'space') {
+                    // Cosmic Space Drone - Völlig rauschfrei und extrem atmosphärisch
+                    const f1 = 55.0; // A1
+                    const f2 = 82.41; // E2
+                    let spaceWave = Math.sin(2 * Math.PI * f1 * t) * 0.4 + Math.sin(2 * Math.PI * f2 * t) * 0.3;
+                    
+                    let starPing = 0;
+                    if (t % 4.0 < 0.1) {
+                        const pingTime = t % 4.0;
+                        starPing = Math.sin(2 * Math.PI * 880 * pingTime) * Math.exp(-15 * pingTime) * 0.1;
+                    }
+                    data[i] = (spaceWave + starPing) * 0.12;
+                } 
             }
             return buffer;
         }
@@ -377,12 +554,18 @@
         function startAmbientSound() {
             initAudio();
             stopAmbientSoundOnly();
+            
+            // Lese phasenabhängige Konfigurationen aus
+            const activeType = state.currentMode === 'focus' ? state.focusAmbientType : state.breakAmbientType;
+            const activeVolume = state.currentMode === 'focus' ? state.focusAmbientVolume : state.breakAmbientVolume;
+            
             ambientSource = audioCtx.createBufferSource();
-            ambientSource.buffer = createNoiseBuffer(state.ambientType);
+            ambientSource.buffer = createNoiseBuffer(activeType);
             ambientSource.loop = true;
             ambientGainNode = audioCtx.createGain();
             ambientGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            ambientGainNode.gain.linearRampToValueAtTime(state.ambientVolume, audioCtx.currentTime + 1.5);
+            ambientGainNode.gain.linearRampToValueAtTime(activeVolume, audioCtx.currentTime + 1.5);
+            
             ambientSource.connect(ambientGainNode);
             ambientGainNode.connect(audioCtx.destination);
             ambientSource.start();
@@ -402,7 +585,6 @@
             updateAmbientUI();
         }
 
-        // Toggleswitch für Ambient-Sounds
         function toggleAmbientSound() { state.isAmbientPlaying ? stopAmbientSoundOnly() : startAmbientSound(); }
 
         function updateAmbientUI() {
@@ -423,6 +605,9 @@
             const remaining = state.currentMode === 'focus' ? state.focusRemaining : state.breakRemaining;
             state.startTimestamp = new Date(now);
             state.endTimestamp = new Date(now.getTime() + remaining * 1000);
+
+            // Verhindere Soundlecks aus dem Preview, falls der Timer startet
+            stopPreviewAmbient();
 
             if (!state.isAmbientPlaying) startAmbientSound();
             document.getElementById('play-icon').classList.add('hidden');
@@ -451,9 +636,18 @@
         }
 
         function handlePhaseEnd() {
-            pauseTimer(); playBellSound();
+            const finishedMode = state.currentMode;
+            pauseTimer(); 
+            
+            // Triggere den phasenabhängigen Alarm
+            const activeAlarm = finishedMode === 'focus' ? state.focusEndSound : state.breakEndSound;
+            playAlarmSound(activeAlarm);
+            
             if (state.autoSwitch) {
-                setTimeout(() => { switchActiveMode(state.currentMode === 'focus' ? 'break' : 'focus'); startTimer(); }, 1500);
+                setTimeout(() => { 
+                    switchActiveMode(finishedMode === 'focus' ? 'break' : 'focus'); 
+                    startTimer(); 
+                }, 1500);
             }
         }
 
@@ -474,7 +668,13 @@
             state.endTimestamp = null;
 
             updateDisplay();
-            if (wasRunning) startTimer();
+            
+            if (wasRunning) {
+                startTimer();
+            } else if (state.isAmbientPlaying) {
+                // Falls nur Ambient-Sound lief: Mit neuen Phaseneinstellungen neustarten
+                startAmbientSound();
+            }
         }
 
         function skipOrReset() {
@@ -507,14 +707,11 @@
             const focusRatio = state.focusRemaining / state.focusDuration;
             const focusFilledLength = focusRatio * circumference;
             
-            // Verwende native SVG-Attribute für absolute visuelle Stabilität in allen Web-Views
             const focusCircle = document.getElementById('focus-circle');
             focusCircle.setAttribute('stroke-dasharray', `${focusFilledLength} ${circumference}`);
             focusCircle.setAttribute('stroke-dashoffset', '0');
 
             // Der Punkt bildet exakt den beweglichen Start- und End-Kopf des schrumpfenden Bogens.
-            // Durch scale(1, -1) auf dem Kreis spiegelt sich die vertikale Richtung.
-            // Die mathematische Bewegung - (focusRatio * 360) richtet den Handle synchron am oberen Anfang aus.
             const fRot = - (focusRatio * 360);
             document.getElementById('focus-handle').style.transform = `rotate(${fRot}deg)`;
             
@@ -610,20 +807,16 @@
 
                 if (rawVal) {
                     if (rawVal.includes(':')) {
-                        // Expliziter Doppelpunkt-Modus
                         const parts = rawVal.split(':');
                         const m = parseInt(parts[0]) || 0;
                         const s = parseInt(parts[1]) || 0;
                         totalSeconds = m * 60 + s;
                     } else {
-                        // Rein numerische Eingabe (z.B. "1530" oder "25")
                         const cleanDigits = rawVal.replace(/\D/g, '');
                         if (cleanDigits.length > 0) {
                             if (cleanDigits.length <= 2) {
-                                // 1-2 Stellen werden als ganze Minuten interpretiert (z.B. "25" -> 25:00)
                                 totalSeconds = parseInt(cleanDigits) * 60;
                             } else {
-                                // 3-4 Stellen werden als MMSS interpretiert (z.B. "1530" -> 15:30, "500" -> 05:00)
                                 const s = parseInt(cleanDigits.slice(-2)) || 0;
                                 const m = parseInt(cleanDigits.slice(0, -2)) || 0;
                                 totalSeconds = m * 60 + s;
@@ -632,7 +825,6 @@
                     }
                 }
 
-                // Grenzwerte einhalten (Mindestens 5 Sekunden, maximal 999 Minuten)
                 if (totalSeconds < 5) totalSeconds = 5;
                 if (totalSeconds > 999 * 60) totalSeconds = 999 * 60;
 
@@ -644,10 +836,11 @@
                     state.breakRemaining = totalSeconds;
                 }
 
-                // Speichern im LocalStorage
-                localStorage.setItem('split_timer_v1_1', JSON.stringify({
+                localStorage.setItem('split_timer_v1_9', JSON.stringify({
                     fD: state.focusDuration, bD: state.breakDuration,
-                    aT: state.ambientType, aV: state.ambientVolume,
+                    fAT: state.focusAmbientType, bAT: state.breakAmbientType,
+                    fAV: state.focusAmbientVolume, bAV: state.breakAmbientVolume,
+                    fES: state.focusEndSound, bES: state.breakEndSound,
                     theme: state.activeTheme
                 }));
 
@@ -688,23 +881,49 @@
         function toggleSettingsModal(s) {
             const m = document.getElementById('modal-settings');
             if (s) {
+                // Grunddaten einlesen
                 document.getElementById('input-focus-time').value = state.focusDuration / 60;
                 document.getElementById('input-break-time').value = state.breakDuration / 60;
-                document.getElementById('range-ambient-vol').value = state.ambientVolume * 100;
-                document.getElementById('select-ambient-type').value = state.ambientType;
+                
+                // Getrennte Ambient Dropdowns
+                document.getElementById('select-focus-ambient-type').value = state.focusAmbientType;
+                document.getElementById('select-break-ambient-type').value = state.breakAmbientType;
+                
+                // Getrennte Lautstärken
+                document.getElementById('range-focus-ambient-vol').value = state.focusAmbientVolume * 100;
+                document.getElementById('range-break-ambient-vol').value = state.breakAmbientVolume * 100;
+                
+                document.getElementById('label-focus-ambient-vol').innerText = `${Math.round(state.focusAmbientVolume * 100)}%`;
+                document.getElementById('label-break-ambient-vol').innerText = `${Math.round(state.breakAmbientVolume * 100)}%`;
+                
+                // Getrennte Wecker-Sounds
+                document.getElementById('select-focus-end-sound').value = state.focusEndSound;
+                document.getElementById('select-break-end-sound').value = state.breakEndSound;
+
                 m.classList.remove('opacity-0', 'pointer-events-none');
                 m.firstElementChild.classList.remove('scale-95');
             } else {
+                stopPreviewAmbient();
                 m.classList.add('opacity-0', 'pointer-events-none');
                 m.firstElementChild.classList.add('scale-95');
             }
         }
 
         function saveSettings() {
+            // Beende laufende Modal-Vorschau vor dem Übernehmen
+            stopPreviewAmbient();
+
             state.focusDuration = (parseInt(document.getElementById('input-focus-time').value) || 25) * 60;
             state.breakDuration = (parseInt(document.getElementById('input-break-time').value) || 5) * 60;
-            state.ambientType = document.getElementById('select-ambient-type').value;
-            state.ambientVolume = document.getElementById('range-ambient-vol').value / 100;
+            
+            state.focusAmbientType = document.getElementById('select-focus-ambient-type').value;
+            state.breakAmbientType = document.getElementById('select-break-ambient-type').value;
+            
+            state.focusAmbientVolume = document.getElementById('range-focus-ambient-vol').value / 100;
+            state.breakAmbientVolume = document.getElementById('range-break-ambient-vol').value / 100;
+            
+            state.focusEndSound = document.getElementById('select-focus-end-sound').value;
+            state.breakEndSound = document.getElementById('select-break-end-sound').value;
             
             if (!state.isRunning) {
                 state.focusRemaining = state.focusDuration;
@@ -713,13 +932,88 @@
                 state.endTimestamp = null;
             }
 
-            localStorage.setItem('split_timer_v1_1', JSON.stringify({
+            localStorage.setItem('split_timer_v1_9', JSON.stringify({
                 fD: state.focusDuration, bD: state.breakDuration,
-                aT: state.ambientType, aV: state.ambientVolume,
+                fAT: state.focusAmbientType, bAT: state.breakAmbientType,
+                fAV: state.focusAmbientVolume, bAV: state.breakAmbientVolume,
+                fES: state.focusEndSound, bES: state.breakEndSound,
                 theme: state.activeTheme
             }));
-            updateDisplay(); toggleSettingsModal(false);
+            
+            updateDisplay(); 
+            toggleSettingsModal(false);
+            
             if (state.isAmbientPlaying) startAmbientSound();
+        }
+
+        // --- MODAL AUDIO PREVIEW LOGIK ---
+        function triggerAlarmPreview(phase) {
+            initAudio();
+            const soundElement = document.getElementById(`select-${phase}-end-sound`);
+            const selectedSound = soundElement.value;
+            playAlarmSound(selectedSound);
+        }
+
+        function togglePreviewAmbient(phase) {
+            initAudio();
+            
+            // Wenn bereits ein Preview für exakt diese Phase läuft -> Stoppen
+            if (activePreviewPhase === phase) {
+                stopPreviewAmbient();
+                return;
+            }
+            
+            // Vorherige Previews beenden
+            stopPreviewAmbient();
+            
+            // Lese die aktuellen Dropdown- und Lautstärke-Werte direkt aus dem Modal-DOM aus
+            const type = document.getElementById(`select-${phase}-ambient-type`).value;
+            const volume = parseFloat(document.getElementById(`range-${phase}-ambient-vol`).value) / 100;
+            
+            previewSource = audioCtx.createBufferSource();
+            previewSource.buffer = createNoiseBuffer(type);
+            previewSource.loop = true;
+            
+            previewGainNode = audioCtx.createGain();
+            previewGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            previewGainNode.gain.linearRampToValueAtTime(volume, audioCtx.currentTime + 0.1);
+            
+            previewSource.connect(previewGainNode);
+            previewGainNode.connect(audioCtx.destination);
+            
+            previewSource.start();
+            activePreviewPhase = phase;
+            
+            updatePreviewButtonsUI();
+        }
+
+        function stopPreviewAmbient() {
+            if (previewSource) {
+                try {
+                    previewSource.stop();
+                } catch(e) {}
+                previewSource = null;
+            }
+            activePreviewPhase = null;
+            updatePreviewButtonsUI();
+        }
+
+        function updatePreviewButtonsUI() {
+            ['focus', 'break'].forEach(phase => {
+                const btn = document.getElementById(`btn-preview-ambient-${phase}`);
+                if (!btn) return;
+                
+                const isCurrent = activePreviewPhase === phase;
+                const accentColor = phase === 'focus' ? 'emerald' : 'rose';
+                
+                if (isCurrent) {
+                    btn.className = `text-[10px] text-${accentColor}-400 hover:text-${accentColor}-300 flex items-center gap-1 bg-${accentColor}-500/25 px-1.5 py-0.5 rounded transition-all scale-105 font-semibold select-none`;
+                    btn.innerHTML = `<svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg><span>Stopp</span>`;
+                } else {
+                    btn.className = `text-[10px] text-${accentColor}-400 hover:text-${accentColor}-300 flex items-center gap-1 bg-${accentColor}-500/10 px-1.5 py-0.5 rounded transition-all select-none`;
+                    btn.innerHTML = `<svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>Testen</span>`;
+                }
+            });
         }
 
         // Aktualisiert die dynamische Start/End-Projektionsvorschau sekündlich im Ruhezustand
@@ -730,24 +1024,57 @@
         }, 1000);
 
         window.addEventListener('DOMContentLoaded', () => {
-            const saved = JSON.parse(localStorage.getItem('split_timer_v1_1') || '{}');
-            if (saved.fD) {
-                state.focusDuration = saved.fD; state.breakDuration = saved.bD;
-                state.ambientType = saved.aT || 'brown'; state.ambientVolume = saved.aV !== undefined ? saved.aV : 0.3;
-                setTheme(saved.theme || 'classic');
+            const saved = JSON.parse(localStorage.getItem('split_timer_v1_9') || '{}');
+            if (saved.fD !== undefined) {
+                state.focusDuration = saved.fD; 
+                state.breakDuration = saved.bD;
+                state.focusAmbientType = saved.fAT || 'brown'; 
+                state.breakAmbientType = saved.bAT || 'rain';
+                state.focusAmbientVolume = saved.fAV !== undefined ? saved.fAV : 0.3;
+                state.breakAmbientVolume = saved.bAV !== undefined ? saved.bAV : 0.3;
+                state.focusEndSound = saved.fES || 'bell';
+                state.breakEndSound = saved.bES || 'harp';
+                setTheme(saved.theme || 'sea');
+            } else {
+                setTheme('sea'); // Startet standardmäßig mit dem blauen Theme
             }
             state.focusRemaining = state.focusDuration;
             state.breakRemaining = state.breakDuration;
+            
             lucide.createIcons();
             updateDisplay();
+
+            // Live-Labels und Echtzeit-Volumenanpassung während der Soundvorschau registrieren
+            ['focus', 'break'].forEach(phase => {
+                const selectEl = document.getElementById(`select-${phase}-ambient-type`);
+                const rangeEl = document.getElementById(`range-${phase}-ambient-vol`);
+                
+                selectEl.addEventListener('change', () => {
+                    if (activePreviewPhase === phase) {
+                        // Falls die Vorschau läuft und sich der Typ ändert: Sound wechseln
+                        togglePreviewAmbient(phase); // Stoppen
+                        togglePreviewAmbient(phase); // Mit neuem Typ starten
+                    }
+                });
+                
+                rangeEl.addEventListener('input', (e) => {
+                    document.getElementById(`label-${phase}-ambient-vol`).innerText = `${e.target.value}%`;
+                    
+                    // Falls die Vorschau aktiv läuft: Direkt das Gain-Node anpassen
+                    if (activePreviewPhase === phase && previewGainNode && audioCtx) {
+                        const newVol = parseFloat(e.target.value) / 100;
+                        previewGainNode.gain.setValueAtTime(newVol, audioCtx.currentTime);
+                    }
+                });
+            });
         });
     </script>
 </body>
 </html>
 <!--
 --- CHANGE LOG ---
-v1.9.0:
-- Lineare Ladebalken unter den Zeit-Projektionen vollständig entfernt.
-- Visuelles Feedback exklusiv auf die synchronen, gegen den Uhrzeigersinn schrumpfenden Ringsegmente verlagert.
-- Rendering-Performance durch die Reduzierung von DOM-Operationen im Timer-Intervall verbessert.
+v2.2.0:
+- Statisches Hintergrundrauschen (White/Pink/Brown Noise) bei den sanften Entspannungstracks ("Lofi Ambient Track", "Cosmic Space Drone") komplett entfernt.
+- Lofi Ambient besitzt nun ausschließlich die klaren, weichen Akkordfolgen und das analoge Vinylknistern.
+- Cosmic Space Drone schwingt jetzt als absolut reiner, tiefer Frequenz-Klangteppich mit klaren Resonanzspitzen. 
 -->
