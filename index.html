@@ -73,8 +73,13 @@
             
             <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
                 <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-40" />
-                    <circle id="focus-handle" cx="50" cy="6" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
+                    <!-- Hintergrund-Hilfskreis -->
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" class="opacity-10" />
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-30" />
+                    <!-- Schrumpfender Fortschrittsbalken (Vertikal gespiegelt, um mit dem -90° SVG-Vektor perfekt bei 12 Uhr entgegen dem Uhrzeigersinn zu starten) -->
+                    <circle id="focus-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100 opacity-90" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
+                    <!-- Rotierender Zeiger (Läuft synchron an der ablaufenden Bogen-Spitze, entgegen dem Uhrzeigersinn) -->
+                    <circle id="focus-handle" cx="94" cy="50" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
                 </svg>
                 
                 <!-- Lucide Icon: Brain/Focus -->
@@ -82,11 +87,13 @@
             </div>
             
             <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
-            <div class="relative flex flex-col items-center">
+            <div class="relative flex flex-col items-center w-full max-w-xs px-4">
                 <div id="time-focus" 
                      ondblclick="startInlineEdit(event, 'focus')" 
                      class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
                      title="Doppelklick zum schnellen Ändern (z.B. 1530 für 15:30)">25:00</div>
+                <!-- Start- und Endzeit-Anzeige -->
+                <div id="bounds-focus" class="mt-4 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center">Projektion: --:-- ➔ --:--</div>
             </div>
         </section>
 
@@ -99,8 +106,10 @@
             
             <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
                 <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-20" />
-                    <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" />
+                    <!-- Hintergrund-Hilfskreis -->
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-10" />
+                    <!-- Schrumpfender Fortschrittsbalken (Vertikal gespiegelt, um mit dem -90° SVG-Vektor perfekt bei 12 Uhr entgegen dem Uhrzeigersinn zu starten) -->
+                    <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
                 </svg>
                 
                 <!-- Lucide Icon: Coffee -->
@@ -108,11 +117,13 @@
             </div>
             
             <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
-            <div class="relative flex flex-col items-center">
+            <div class="relative flex flex-col items-center w-full max-w-xs px-4">
                 <div id="time-break" 
                      ondblclick="startInlineEdit(event, 'break')" 
                      class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
                      title="Doppelklick zum schnellen Ändern (z.B. 0500 für 05:00)">05:00</div>
+                <!-- Start- und Endzeit-Anzeige -->
+                <div id="bounds-break" class="mt-4 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center">Projektion: --:-- ➔ --:--</div>
             </div>
         </section>
 
@@ -236,7 +247,10 @@
             bellVolume: 0.7,
             ambientType: 'brown',
             isAmbientPlaying: false,
-            activeTheme: 'classic'
+            activeTheme: 'classic',
+            // Intervall-Zeitstempel
+            startTimestamp: null,
+            endTimestamp: null
         };
 
         let timerInterval = null;
@@ -388,6 +402,7 @@
             updateAmbientUI();
         }
 
+        // Toggleswitch für Ambient-Sounds
         function toggleAmbientSound() { state.isAmbientPlaying ? stopAmbientSoundOnly() : startAmbientSound(); }
 
         function updateAmbientUI() {
@@ -402,12 +417,27 @@
         function startTimer() {
             if (state.isRunning || isEditingInline) return;
             state.isRunning = true;
+            
+            // Friere Start- und Endzeitpunkt ein, wenn der Timer startet
+            const now = new Date();
+            const remaining = state.currentMode === 'focus' ? state.focusRemaining : state.breakRemaining;
+            state.startTimestamp = new Date(now);
+            state.endTimestamp = new Date(now.getTime() + remaining * 1000);
+
             if (!state.isAmbientPlaying) startAmbientSound();
             document.getElementById('play-icon').classList.add('hidden');
             document.getElementById('pause-icon').classList.remove('hidden');
+            
+            updateDisplay();
+
             timerInterval = setInterval(() => {
                 const rem = state.currentMode === 'focus' ? 'focusRemaining' : 'breakRemaining';
-                if (state[rem] > 0) { state[rem]--; updateDisplay(); } else { handlePhaseEnd(); }
+                if (state[rem] > 0) { 
+                    state[rem]--; 
+                    updateDisplay(); 
+                } else { 
+                    handlePhaseEnd(); 
+                }
             }, 1000);
         }
 
@@ -417,6 +447,7 @@
             document.getElementById('play-icon').classList.remove('hidden');
             document.getElementById('pause-icon').classList.add('hidden');
             stopAmbientSoundOnly();
+            updateDisplay();
         }
 
         function handlePhaseEnd() {
@@ -437,6 +468,11 @@
             document.getElementById('panel-focus').classList.toggle('grayscale-[15%]', mode !== 'focus');
             document.getElementById('panel-break').classList.toggle('opacity-40', mode !== 'break');
             document.getElementById('panel-break').classList.toggle('grayscale-[15%]', mode !== 'break');
+            
+            // Bei Wechsel die Zeitstempel zurücksetzen, damit Vorschau wieder dynamisch läuft
+            state.startTimestamp = null;
+            state.endTimestamp = null;
+
             updateDisplay();
             if (wasRunning) startTimer();
         }
@@ -445,20 +481,84 @@
             pauseTimer();
             state.focusRemaining = state.focusDuration;
             state.breakRemaining = state.breakDuration;
+            state.startTimestamp = null;
+            state.endTimestamp = null;
             switchActiveMode(state.currentMode === 'focus' ? 'break' : 'focus');
         }
 
-        function formatTime(s) {
-            return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+        function formatTime(seconds) {
+            return `${Math.floor(seconds/60).toString().padStart(2,'0')}:${(seconds%60).toString().padStart(2,'0')}`;
+        }
+
+        function formatClock(date) {
+            const h = date.getHours().toString().padStart(2, '0');
+            const m = date.getMinutes().toString().padStart(2, '0');
+            return `${h}:${m}`;
         }
 
         function updateDisplay() {
+            // Zeitziffern
             document.getElementById('time-focus').innerText = formatTime(state.focusRemaining);
             document.getElementById('time-break').innerText = formatTime(state.breakRemaining);
-            const fRot = ((state.focusDuration - state.focusRemaining) / state.focusDuration) * 360;
+            
+            const circumference = 276.46;
+
+            // 1. Fokus-Ring (Schrumpfender Fortschrittsbalken und Zeiger)
+            const focusRatio = state.focusRemaining / state.focusDuration;
+            const focusFilledLength = focusRatio * circumference;
+            
+            // Verwende native SVG-Attribute für absolute visuelle Stabilität in allen Web-Views
+            const focusCircle = document.getElementById('focus-circle');
+            focusCircle.setAttribute('stroke-dasharray', `${focusFilledLength} ${circumference}`);
+            focusCircle.setAttribute('stroke-dashoffset', '0');
+
+            // Der Punkt bildet exakt den beweglichen Start- und End-Kopf des schrumpfenden Bogens.
+            // Durch scale(1, -1) auf dem Kreis spiegelt sich die vertikale Richtung.
+            // Die mathematische Bewegung - (focusRatio * 360) richtet den Handle synchron am oberen Anfang aus.
+            const fRot = - (focusRatio * 360);
             document.getElementById('focus-handle').style.transform = `rotate(${fRot}deg)`;
-            const bOff = (state.breakRemaining / state.breakDuration) * 276.46;
-            document.getElementById('break-circle').style.strokeDashoffset = 276.46 - bOff;
+            
+            // 2. Pausen-Ring (Schrumpfender Fortschrittsbalken)
+            const breakRatio = state.breakRemaining / state.breakDuration;
+            const breakFilledLength = breakRatio * circumference;
+            
+            const breakCircle = document.getElementById('break-circle');
+            breakCircle.setAttribute('stroke-dasharray', `${breakFilledLength} ${circumference}`);
+            breakCircle.setAttribute('stroke-dashoffset', '0');
+
+            // 3. Start- und Endzeit-Projektionen berechnen
+            let displayStartStr = "";
+            let displayEndStr = "";
+            let prefix = "";
+
+            if (state.isRunning && state.startTimestamp && state.endTimestamp) {
+                // Wenn aktiv: Tatsächlich eingefrorenes Intervall anzeigen
+                displayStartStr = formatClock(state.startTimestamp);
+                displayEndStr = formatClock(state.endTimestamp);
+                prefix = "Intervall";
+            } else {
+                // Wenn gestoppt: Dynamische Vorschau auf "Jetzt" bezogen
+                const now = new Date();
+                const remainingSec = state.currentMode === 'focus' ? state.focusRemaining : state.breakRemaining;
+                const endProj = new Date(now.getTime() + remainingSec * 1000);
+
+                displayStartStr = `Jetzt (${formatClock(now)})`;
+                displayEndStr = formatClock(endProj);
+                prefix = "Projektion";
+            }
+
+            // In die entsprechenden DOM-Container schreiben
+            if (state.currentMode === 'focus') {
+                document.getElementById('bounds-focus').innerText = `${prefix}: ${displayStartStr} ➔ ${displayEndStr}`;
+                document.getElementById('bounds-focus').style.opacity = "1.0";
+                document.getElementById('bounds-break').style.opacity = "0.4";
+                document.getElementById('bounds-break').innerText = `Pause: ${Math.round(state.breakDuration / 60)} Min`;
+            } else {
+                document.getElementById('bounds-break').innerText = `${prefix}: ${displayStartStr} ➔ ${displayEndStr}`;
+                document.getElementById('bounds-break').style.opacity = "1.0";
+                document.getElementById('bounds-focus').style.opacity = "0.4";
+                document.getElementById('bounds-focus').innerText = `Fokus: ${Math.round(state.focusDuration / 60)} Min`;
+            }
         }
 
         // --- INLINE EDIT LOGIC (DOPPELKLICK) ---
@@ -468,6 +568,10 @@
             if (isEditingInline) return;
             isEditingInline = true;
             pauseTimer();
+
+            // Zeitstempel zurücksetzen, um Verwirrung während des Editiervorgangs vorzubeugen
+            state.startTimestamp = null;
+            state.endTimestamp = null;
 
             const displayEl = document.getElementById(`time-${mode}`);
             const currentSeconds = mode === 'focus' ? state.focusDuration : state.breakDuration;
@@ -491,7 +595,7 @@
 
             // Hilfetext direkt unter dem Eingabefeld einblenden
             const hint = document.createElement('div');
-            hint.className = 'absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 text-xs md:text-sm font-normal tracking-wide opacity-80 py-1 px-3 rounded bg-stone-900/85 text-stone-300 border border-stone-800 pointer-events-none whitespace-nowrap z-30 shadow-md';
+            hint.className = 'absolute -bottom-10 left-1/2 -translate-x-1/2 text-xs md:text-sm font-normal tracking-wide opacity-90 py-1.5 px-3.5 rounded bg-stone-950 text-stone-300 border border-stone-800 pointer-events-none whitespace-nowrap z-30 shadow-md';
             hint.innerText = "Enter zum Speichern (z.B. 1530 für 15:30, oder 25 für 25:00)";
 
             // Events isolieren
@@ -605,6 +709,8 @@
             if (!state.isRunning) {
                 state.focusRemaining = state.focusDuration;
                 state.breakRemaining = state.breakDuration;
+                state.startTimestamp = null;
+                state.endTimestamp = null;
             }
 
             localStorage.setItem('split_timer_v1_1', JSON.stringify({
@@ -615,6 +721,13 @@
             updateDisplay(); toggleSettingsModal(false);
             if (state.isAmbientPlaying) startAmbientSound();
         }
+
+        // Aktualisiert die dynamische Start/End-Projektionsvorschau sekündlich im Ruhezustand
+        setInterval(() => {
+            if (!state.isRunning && !isEditingInline) {
+                updateDisplay();
+            }
+        }, 1000);
 
         window.addEventListener('DOMContentLoaded', () => {
             const saved = JSON.parse(localStorage.getItem('split_timer_v1_1') || '{}');
@@ -633,11 +746,8 @@
 </html>
 <!--
 --- CHANGE LOG ---
-v1.3.0:
-- Umstellung des Inline-Editors auf Textfeld zur freien Eingabe von Formaten.
-- Intelligenter Parser hinzugefügt: Zifferneingaben wie "1530" werden zu "15:30", während "25" als "25:00" interpretiert wird.
-- Eleganten Inline-Hilfetext unter dem Ziffernfeld während des Editiermodus hinzugefügt.
-- Vier neue, prozedurale Ambient-Generatoren implementiert: Pink Noise, White Noise, Ocean Waves (Meeresrauschen) und Fireplace (Kaminfeuer).
-- LFO-Modulationen und Wood-Crackling prozedural im Buffer generiert für maximale Offline-Stabilität und Performance.
-- Integration aller neuen Ambient-Typen im Einstellungsmenü.
+v1.9.0:
+- Lineare Ladebalken unter den Zeit-Projektionen vollständig entfernt.
+- Visuelles Feedback exklusiv auf die synchronen, gegen den Uhrzeigersinn schrumpfenden Ringsegmente verlagert.
+- Rendering-Performance durch die Reduzierung von DOM-Operationen im Timer-Intervall verbessert.
 -->
