@@ -76,9 +76,9 @@
                     <!-- Hintergrund-Hilfskreis -->
                     <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" class="opacity-10" />
                     <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-30" />
-                    <!-- Schrumpfender Fortschrittsbalken (Vertikal gespiegelt, um mit dem -90° SVG-Vektor perfekt bei 12 Uhr entgegen dem Uhrzeigersinn zu starten) -->
+                    <!-- Schrumpfender Fortschrittsbalken -->
                     <circle id="focus-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100 opacity-90" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
-                    <!-- Rotierender Zeiger (Läuft synchron an der ablaufenden Bogen-Spitze, entgegen dem Uhrzeigersinn) -->
+                    <!-- Rotierender Zeiger -->
                     <circle id="focus-handle" cx="94" cy="50" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
                 </svg>
                 
@@ -108,7 +108,7 @@
                 <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                     <!-- Hintergrund-Hilfskreis -->
                     <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-10" />
-                    <!-- Schrumpfender Fortschrittsbalken (Vertikal gespiegelt, um mit dem -90° SVG-Vektor perfekt bei 12 Uhr entgegen dem Uhrzeigersinn zu starten) -->
+                    <!-- Schrumpfender Fortschrittsbalken -->
                     <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
                 </svg>
                 
@@ -149,7 +149,7 @@
 
         <div class="h-6 w-[1px] bg-stone-800"></div>
 
-        <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-3 text-stone-400 hover:text-white transition-colors relative">
+        <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-3 text-stone-400 hover:text-white transition-colors relative" title="Ambient Sound an/aus">
             <i id="sound-on-icon" data-lucide="volume-2" class="w-6 h-6 hidden"></i>
             <i id="sound-off-icon" data-lucide="volume-x" class="w-6 h-6 text-rose-500"></i>
         </button>
@@ -215,8 +215,12 @@
                                 <option value="rain">Sommerregen (Beruhigend)</option>
                                 <option value="waves">Meeresrauschen (Wellen)</option>
                                 <option value="fireplace">Kaminfeuer (Knistern)</option>
-                                <option value="lofi">Lofi Ambient Track 🎵</option>
+                                <option value="lofi">Lofi Chill Loop 🎵</option>
+                                <option value="lofi_nostalgia">Lofi Nostalgia 🍂</option>
+                                <option value="lofi_cozy">Cozy Café ☕</option>
+                                <option value="lofi_sunset">Sunset Lounge 🌅</option>
                                 <option value="space">Cosmic Drone 🌌</option>
+                                <option value="birds">Waldesvögel 🌲</option>
                             </select>
                         </div>
                         <div>
@@ -262,8 +266,12 @@
                                 <option value="rain">Sommerregen (Beruhigend)</option>
                                 <option value="waves">Meeresrauschen (Wellen)</option>
                                 <option value="fireplace">Kaminfeuer (Knistern)</option>
-                                <option value="lofi">Lofi Ambient Track 🎵</option>
+                                <option value="lofi">Lofi Chill Loop 🎵</option>
+                                <option value="lofi_nostalgia">Lofi Nostalgia 🍂</option>
+                                <option value="lofi_cozy">Cozy Café ☕</option>
+                                <option value="lofi_sunset">Sunset Lounge 🌅</option>
                                 <option value="space">Cosmic Drone 🌌</option>
+                                <option value="birds">Waldesvögel 🌲</option>
                             </select>
                         </div>
                         <div>
@@ -526,7 +534,7 @@
                         waveSum += Math.sin(2 * Math.PI * f * t) * 0.22;
                     });
 
-                    // Weiches Vinylknistern bleibt für die Atmosphäre erhalten, weißes Hiss-Rauschen entfernt
+                    // Weiches Vinylknistern bleibt für die Atmosphäre erhalten
                     let crackle = 0;
                     if (Math.random() > 0.9996) {
                         crackle = (Math.random() * 2 - 1) * 0.4;
@@ -534,6 +542,105 @@
 
                     data[i] = (waveSum * env * 0.15) + crackle * 0.03;
                 } 
+                else if (type === 'lofi_nostalgia') {
+                    // Nostalgische Progression (Fmaj7 -> G6 -> Em7 -> Am7) - Rauschfrei
+                    const chords = [
+                        [87.31, 220.00, 261.63, 329.63], // Fmaj7
+                        [98.00, 246.94, 293.66, 329.63], // G6
+                        [82.41, 196.00, 246.94, 293.66], // Em7
+                        [110.00, 261.63, 329.63, 392.00]  // Am7
+                    ];
+                    let chordIdx = Math.floor(t / 2.5) % 4;
+                    let chordTime = t % 2.5;
+                    
+                    let env = 1.0;
+                    if (chordTime < 0.3) env = chordTime / 0.3;
+                    else if (chordTime > 2.2) env = (2.5 - chordTime) / 0.3;
+
+                    // Wow & Flutter (Tape Saturation Simulation) für Vintage-Charakter
+                    let wow = 0.00025 * Math.sin(2 * Math.PI * 3.2 * t);
+                    let waveSum = 0;
+                    const freqs = chords[chordIdx];
+                    freqs.forEach(f => {
+                        let p = 2 * Math.PI * f * (t + wow);
+                        waveSum += Math.sin(p) * 0.18 + Math.sin(p * 2) * 0.05; // Leichte Obertöne für Wärme
+                    });
+
+                    let crackle = 0;
+                    if (Math.random() > 0.9997) {
+                        crackle = (Math.random() * 2 - 1) * 0.35;
+                    }
+
+                    data[i] = (waveSum * env * 0.13) + crackle * 0.02;
+                }
+                else if (type === 'lofi_cozy') {
+                    // Cozy Café Progression (Am9 -> D9 -> Gmaj7 -> Cmaj7) - Rauschfrei
+                    const chords = [
+                        [110.00, 130.81, 196.00, 246.94], // Am9 (Sparsames Voicing)
+                        [146.83, 185.00, 220.00, 329.63], // D9
+                        [98.00, 146.83, 185.00, 220.00],  // Gmaj7
+                        [130.81, 164.81, 196.00, 246.94]  // Cmaj7
+                    ];
+                    let chordIdx = Math.floor(t / 2.5) % 4;
+                    let chordTime = t % 2.5;
+                    
+                    let env = 1.0;
+                    if (chordTime < 0.4) env = chordTime / 0.4;
+                    else if (chordTime > 2.1) env = (2.5 - chordTime) / 0.4;
+
+                    let waveSum = 0;
+                    const freqs = chords[chordIdx];
+                    freqs.forEach((f, idx) => {
+                        let detune = 1.0008 * (idx - 1.5);
+                        waveSum += Math.sin(2 * Math.PI * f * detune * t) * 0.2;
+                    });
+
+                    // Subtiles E-Piano/Rhodes-Chime-Event auf Beat 2
+                    let chime = 0;
+                    if (chordTime > 0.6 && chordTime < 1.1) {
+                        let chimeT = chordTime - 0.6;
+                        chime = Math.sin(2 * Math.PI * 880 * chimeT) * Math.exp(-12 * chimeT) * 0.06;
+                    }
+
+                    let crackle = 0;
+                    if (Math.random() > 0.9995) {
+                        crackle = (Math.random() * 2 - 1) * 0.3;
+                    }
+
+                    data[i] = (waveSum * env * 0.12) + chime + crackle * 0.02;
+                }
+                else if (type === 'lofi_sunset') {
+                    // Sunset Progression (Cmaj7 -> Fmaj7 -> Dm7 -> G7) - Rauschfrei
+                    const chords = [
+                        [130.81, 164.81, 196.00, 246.94], // Cmaj7
+                        [87.31, 174.61, 220.00, 261.63],  // Fmaj7
+                        [146.83, 174.61, 220.00, 261.63], // Dm7
+                        [98.00, 146.83, 246.94, 293.66]   // G7
+                    ];
+                    let chordIdx = Math.floor(t / 2.5) % 4;
+                    let chordTime = t % 2.5;
+                    
+                    let env = 1.0;
+                    if (chordTime < 0.3) env = chordTime / 0.3;
+                    else if (chordTime > 2.2) env = (2.5 - chordTime) / 0.3;
+
+                    // Extrem langsamer Modulations-Filter Sweep (LFO)
+                    let filterSweep = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.08 * t);
+                    let waveSum = 0;
+                    const freqs = chords[chordIdx];
+                    freqs.forEach(f => {
+                        let base = Math.sin(2 * Math.PI * f * t) * 0.18;
+                        let harmonic = Math.sin(2 * Math.PI * f * 2 * t) * 0.05 * filterSweep;
+                        waveSum += base + harmonic;
+                    });
+
+                    let crackle = 0;
+                    if (Math.random() > 0.9997) {
+                        crackle = (Math.random() * 2 - 1) * 0.25;
+                    }
+
+                    data[i] = (waveSum * env * 0.14) + crackle * 0.015;
+                }
                 else if (type === 'space') {
                     // Cosmic Space Drone - Völlig rauschfrei und extrem atmosphärisch
                     const f1 = 55.0; // A1
@@ -547,6 +654,17 @@
                     }
                     data[i] = (spaceWave + starPing) * 0.12;
                 } 
+                else if (type === 'birds') {
+                    // Waldesvögel - Reine, klare Synthesizer-Vogelrufe auf leisem, kristallklarem Hintergrund
+                    let birdChirp = 0;
+                    const cycle = t % 3.0;
+                    if (cycle > 1.2 && cycle < 1.45) {
+                        const chirpT = cycle - 1.2;
+                        const freq = 2200 + 1200 * Math.sin(2 * Math.PI * 8 * chirpT) + 400 * chirpT;
+                        birdChirp = Math.sin(2 * Math.PI * freq * chirpT) * Math.exp(-8 * chirpT) * 0.12;
+                    }
+                    data[i] = birdChirp;
+                }
             }
             return buffer;
         }
@@ -1073,8 +1191,9 @@
 </html>
 <!--
 --- CHANGE LOG ---
-v2.2.0:
-- Statisches Hintergrundrauschen (White/Pink/Brown Noise) bei den sanften Entspannungstracks ("Lofi Ambient Track", "Cosmic Space Drone") komplett entfernt.
-- Lofi Ambient besitzt nun ausschließlich die klaren, weichen Akkordfolgen und das analoge Vinylknistern.
-- Cosmic Space Drone schwingt jetzt als absolut reiner, tiefer Frequenz-Klangteppich mit klaren Resonanzspitzen. 
+v2.3.0:
+- Drei zusätzliche, vollständig rauschfreie, synthetisierte Lofi Ambient Tracks hinzugefügt:
+  1. "Lofi Nostalgia 🍂" mit sanfter analoger Magnetband-Vibrato-Modulation (Wow & Flutter).
+  2. "Cozy Café ☕" mit warmen Jazz-Akkorden und einer dezenten, weichen Rhodes-Glockenmelodie.
+  3. "Sunset Lounge 🌅" mit atmosphärischen Cmaj7-Fmaj7 Akkordfolgen und einem sehr langsamen, entspannten Modulations-Filter-Sweep.
 -->
