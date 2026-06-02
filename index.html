@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Split-Screen Study Timer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlNwbGl0LVNjcmVlbiBTdHVkeSBUaW1lciIsCiAgInNob3J0X25hbWUiOiAiU3BsaXRUaW1lciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjODU1RTREIiwKICAidGhlbWVfY29sb3IiOiAiIzg1NUU0RCIKfQ==">
+
+    <style>
+        :root {
+            /* Standard-Theme: Classic (v1.0.0 inspiriert) */
+            --focus-bg: #855E4D;
+            --focus-text: #F5E2DA;
+            --break-bg: #F5E2DA;
+            --break-text: #855E4D;
+            --accent: #10b981; /* emerald-500 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            background-color: #0c0a09;
+        }
+
+        .timer-digits {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .transition-dim {
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.8s ease;
+        }
+
+        /* Dynamische Panel-Farben */
+        #panel-focus { background-color: var(--focus-bg); color: var(--focus-text); }
+        #panel-break { background-color: var(--break-bg); color: var(--break-text); }
+
+        /* Custom Scrollbar für Settings */
+        .settings-scroll::-webkit-scrollbar { width: 4px; }
+        .settings-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+
+        /* Verhindert die unschönen Pfeiltasten in der Zahlen-Eingabe */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="text-stone-100 overflow-hidden h-screen w-screen flex flex-col justify-between">
+
+    <main class="flex-1 flex flex-col md:flex-row h-full w-full relative">
+        
+        <!-- FOKUS-PANEL -->
+        <section id="panel-focus" 
+                 onclick="switchActiveMode('focus')"
+                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer">
+            
+            <h2 class="text-2xl md:text-3xl font-light tracking-[0.25em] uppercase mb-6 md:mb-10 text-center">Fokus</h2>
+            
+            <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
+                <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-40" />
+                    <circle id="focus-handle" cx="50" cy="6" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
+                </svg>
+                
+                <!-- Lucide Icon: Brain/Focus -->
+                <i data-lucide="brain" class="w-20 h-20 md:w-28 md:h-28 opacity-90"></i>
+            </div>
+            
+            <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
+            <div class="relative flex flex-col items-center">
+                <div id="time-focus" 
+                     ondblclick="startInlineEdit(event, 'focus')" 
+                     class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
+                     title="Doppelklick zum schnellen Ändern (z.B. 1530 für 15:30)">25:00</div>
+            </div>
+        </section>
+
+        <!-- PAUSEN-PANEL -->
+        <section id="panel-break" 
+                 onclick="switchActiveMode('break')"
+                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer opacity-40 grayscale-[15%]">
+            
+            <h2 class="text-2xl md:text-3xl font-light tracking-[0.25em] uppercase mb-6 md:mb-10 text-center">Pause</h2>
+            
+            <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
+                <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-20" />
+                    <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" />
+                </svg>
+                
+                <!-- Lucide Icon: Coffee -->
+                <i data-lucide="coffee" class="w-20 h-20 md:w-28 md:h-28 opacity-90"></i>
+            </div>
+            
+            <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
+            <div class="relative flex flex-col items-center">
+                <div id="time-break" 
+                     ondblclick="startInlineEdit(event, 'break')" 
+                     class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
+                     title="Doppelklick zum schnellen Ändern (z.B. 0500 für 05:00)">05:00</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FLOATING BEDIENTASTEN -->
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-3 bg-stone-900/90 backdrop-blur-md px-5 py-3 rounded-full border border-stone-800 shadow-2xl">
+        
+        <button onclick="toggleSettingsModal(true)" class="p-3 text-stone-400 hover:text-white transition-colors" title="Einstellungen">
+            <i data-lucide="settings" class="w-6 h-6"></i>
+        </button>
+
+        <div class="h-6 w-[1px] bg-stone-800"></div>
+
+        <button id="btn-play-pause" onclick="toggleTimer()" class="p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-all shadow-lg active:scale-95">
+            <i id="play-icon" data-lucide="play" class="w-6 h-6"></i>
+            <i id="pause-icon" data-lucide="pause" class="w-6 h-6 hidden"></i>
+        </button>
+
+        <button onclick="skipOrReset()" class="p-3 text-stone-400 hover:text-white transition-colors" title="Nächste Phase">
+            <i data-lucide="skip-forward" class="w-6 h-6"></i>
+        </button>
+
+        <div class="h-6 w-[1px] bg-stone-800"></div>
+
+        <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-3 text-stone-400 hover:text-white transition-colors relative">
+            <i id="sound-on-icon" data-lucide="volume-2" class="w-6 h-6 hidden"></i>
+            <i id="sound-off-icon" data-lucide="volume-x" class="w-6 h-6 text-rose-500"></i>
+        </button>
+    </div>
+
+    <!-- EINSTELLUNGEN MODAL -->
+    <div id="modal-settings" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-stone-900 border border-stone-800 rounded-3xl p-6 w-[90%] max-w-md shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Konfiguration</h3>
+                <button onclick="toggleSettingsModal(false)" class="text-stone-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="settings-scroll overflow-y-auto pr-2 space-y-6">
+                <!-- Farb-Themes -->
+                <div>
+                    <label class="block text-sm font-medium text-stone-400 mb-3">Farb-Theme</label>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button onclick="setTheme('classic')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Classic">
+                            <div class="w-1/2 h-full" style="background:#855E4D"></div><div class="w-1/2 h-full" style="background:#F5E2DA"></div>
+                        </button>
+                        <button onclick="setTheme('sea')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Deep Sea">
+                            <div class="w-1/2 h-full" style="background:#1e3a8a"></div><div class="w-1/2 h-full" style="background:#bfdbfe"></div>
+                        </button>
+                        <button onclick="setTheme('forest')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Forest">
+                            <div class="w-1/2 h-full" style="background:#064e3b"></div><div class="w-1/2 h-full" style="background:#d1fae5"></div>
+                        </button>
+                        <button onclick="setTheme('midnight')" class="h-10 rounded-lg border-2 border-stone-700 overflow-hidden flex" title="Midnight">
+                            <div class="w-1/2 h-full" style="background:#171717"></div><div class="w-1/2 h-full" style="background:#525252"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Zeiteinstellungen -->
+                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-stone-800">
+                    <div>
+                        <label class="block text-sm font-medium text-stone-400 mb-2">Fokus (Min)</label>
+                        <input type="number" id="input-focus-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-stone-400 mb-2">Pause (Min)</label>
+                        <input type="number" id="input-break-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
+                    </div>
+                </div>
+
+                <!-- Sound & Volumen -->
+                <div class="space-y-4 pt-4 border-t border-stone-800">
+                    <div>
+                        <label class="block text-sm font-medium text-stone-400 mb-2">Ambient-Typ</label>
+                        <select id="select-ambient-type" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-2 text-white">
+                            <option value="brown">Brown Noise (Tiefer Fokus)</option>
+                            <option value="pink">Rosa Rauschen (Ausgewogen)</option>
+                            <option value="white">Weißes Rauschen (Klassisch)</option>
+                            <option value="rain">Sommerregen (Beruhigend)</option>
+                            <option value="waves">Meeresrauschen (Sanfte Wellen)</option>
+                            <option value="fireplace">Kaminfeuer (Gemütliches Knistern)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-stone-400 uppercase tracking-wider">Lautstärke Ambient</span>
+                            <span id="label-ambient-vol" class="text-white">30%</span>
+                        </div>
+                        <input type="range" id="range-ambient-vol" min="0" max="100" class="w-full h-1.5 bg-stone-800 rounded-lg appearance-none accent-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="saveSettings()" class="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-colors">
+                Anwenden & Speichern
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURATION & THEMES ---
+        const THEMES = {
+            classic: { fBg: '#855E4D', fTxt: '#F5E2DA', bBg: '#F5E2DA', bTxt: '#855E4D' },
+            sea: { fBg: '#1e3a8a', fTxt: '#bfdbfe', bBg: '#bfdbfe', bTxt: '#1e3a8a' },
+            forest: { fBg: '#064e3b', fTxt: '#d1fae5', bBg: '#d1fae5', bTxt: '#064e3b' },
+            midnight: { fBg: '#171717', fTxt: '#e5e5e5', bBg: '#404040', bTxt: '#f5f5f5' }
+        };
+
+        let state = {
+            focusDuration: 25 * 60, // Standard 25m
+            breakDuration: 5 * 60,  // Standard 5m
+            focusRemaining: 25 * 60,
+            breakRemaining: 5 * 60,
+            currentMode: 'focus',
+            isRunning: false,
+            autoSwitch: true,
+            ambientVolume: 0.3,
+            bellVolume: 0.7,
+            ambientType: 'brown',
+            isAmbientPlaying: false,
+            activeTheme: 'classic'
+        };
+
+        let timerInterval = null;
+        let audioCtx = null;
+        let ambientSource = null;
+        let ambientGainNode = null;
+        let isEditingInline = false; // Flag um Klicks während der Editierung zu blocken
+
+        // --- THEME MANAGEMENT ---
+        function setTheme(themeKey) {
+            state.activeTheme = themeKey;
+            const t = THEMES[themeKey];
+            const root = document.documentElement;
+            root.style.setProperty('--focus-bg', t.fBg);
+            root.style.setProperty('--focus-text', t.fTxt);
+            root.style.setProperty('--break-bg', t.bBg);
+            root.style.setProperty('--break-text', t.bTxt);
+        }
+
+        // --- AUDIO ENGINE ---
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playBellSound() {
+            initAudio();
+            const now = audioCtx.currentTime;
+            const mainGain = audioCtx.createGain();
+            mainGain.gain.setValueAtTime(0, now);
+            mainGain.gain.linearRampToValueAtTime(state.bellVolume, now + 0.01);
+            mainGain.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
+            mainGain.connect(audioCtx.destination);
+
+            [220, 330, 440, 554, 880].forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                g.gain.setValueAtTime(0.5 / (i + 1), now);
+                g.gain.exponentialRampToValueAtTime(0.0001, now + (4.0 / (i + 1)));
+                osc.connect(g); g.connect(mainGain);
+                osc.start(); osc.stop(now + 4.0);
+            });
+        }
+
+        function createNoiseBuffer(type) {
+            // Eine 10-Sekunden-Schleife für exzellente und nahtlose atmosphärische Modulationen
+            const duration = 10;
+            const bufferSize = duration * audioCtx.sampleRate;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0; // Rosa Filter
+            let lastOut = 0.0; // Braunes Filter
+
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                
+                if (type === 'white') {
+                    data[i] = white * 0.35;
+                } 
+                else if (type === 'pink') {
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    let pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    b6 = white * 0.115926;
+                    data[i] = pink * 0.06;
+                } 
+                else if (type === 'brown') {
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 1.3;
+                } 
+                else if (type === 'rain') {
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    let pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    b6 = white * 0.115926;
+                    
+                    // Feine, dynamisch auftreffende Regentropfen (Knistern im Hochfrequenzbereich)
+                    const droplet = Math.random() > 0.9985 ? (Math.random() * 0.35) : 0;
+                    data[i] = (pink * 0.06) + droplet;
+                } 
+                else if (type === 'waves') {
+                    // Meeresrauschen: Rosa Rauschen moduliert durch eine periodische Sinus-Swell-Kurve
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    let pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    b6 = white * 0.115926;
+                    
+                    const t = i / audioCtx.sampleRate;
+                    // Sanfter LFO-Zyklus von 10 Sekunden (An- und Abschwellen)
+                    const lfo = 0.55 + 0.45 * Math.sin((2 * Math.PI * t) / duration - Math.PI / 2);
+                    data[i] = pink * 0.07 * lfo;
+                } 
+                else if (type === 'fireplace') {
+                    // Kaminfeuer: Warmes Braunes Rauschen mit unregelmäßigen Holzknister-Spikes
+                    data[i] = (lastOut + (0.018 * white)) / 1.018;
+                    lastOut = data[i];
+                    data[i] *= 0.65;
+                    
+                    // Sporadische, explosive Holzknisterer
+                    if (Math.random() > 0.9995) {
+                        data[i] += (Math.random() * 2 - 1) * 0.28;
+                    }
+                }
+            }
+            return buffer;
+        }
+
+        function startAmbientSound() {
+            initAudio();
+            stopAmbientSoundOnly();
+            ambientSource = audioCtx.createBufferSource();
+            ambientSource.buffer = createNoiseBuffer(state.ambientType);
+            ambientSource.loop = true;
+            ambientGainNode = audioCtx.createGain();
+            ambientGainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            ambientGainNode.gain.linearRampToValueAtTime(state.ambientVolume, audioCtx.currentTime + 1.5);
+            ambientSource.connect(ambientGainNode);
+            ambientGainNode.connect(audioCtx.destination);
+            ambientSource.start();
+            state.isAmbientPlaying = true;
+            updateAmbientUI();
+        }
+
+        function stopAmbientSoundOnly() {
+            if (ambientSource) {
+                try {
+                    ambientGainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
+                    const s = ambientSource; setTimeout(() => s.stop(), 900);
+                } catch(e) {}
+                ambientSource = null;
+            }
+            state.isAmbientPlaying = false;
+            updateAmbientUI();
+        }
+
+        function toggleAmbientSound() { state.isAmbientPlaying ? stopAmbientSoundOnly() : startAmbientSound(); }
+
+        function updateAmbientUI() {
+            document.getElementById('sound-on-icon').classList.toggle('hidden', !state.isAmbientPlaying);
+            document.getElementById('sound-off-icon').classList.toggle('hidden', state.isAmbientPlaying);
+            document.getElementById('btn-sound-ambient').classList.toggle('text-emerald-400', state.isAmbientPlaying);
+        }
+
+        // --- TIMER LOGIC ---
+        function toggleTimer() { state.isRunning ? pauseTimer() : startTimer(); }
+
+        function startTimer() {
+            if (state.isRunning || isEditingInline) return;
+            state.isRunning = true;
+            if (!state.isAmbientPlaying) startAmbientSound();
+            document.getElementById('play-icon').classList.add('hidden');
+            document.getElementById('pause-icon').classList.remove('hidden');
+            timerInterval = setInterval(() => {
+                const rem = state.currentMode === 'focus' ? 'focusRemaining' : 'breakRemaining';
+                if (state[rem] > 0) { state[rem]--; updateDisplay(); } else { handlePhaseEnd(); }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            state.isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('play-icon').classList.remove('hidden');
+            document.getElementById('pause-icon').classList.add('hidden');
+            stopAmbientSoundOnly();
+        }
+
+        function handlePhaseEnd() {
+            pauseTimer(); playBellSound();
+            if (state.autoSwitch) {
+                setTimeout(() => { switchActiveMode(state.currentMode === 'focus' ? 'break' : 'focus'); startTimer(); }, 1500);
+            }
+        }
+
+        function switchActiveMode(mode) {
+            // Wenn gerade editiert wird, soll kein Phasenwechsel via Panel-Klick getriggert werden
+            if (isEditingInline) return;
+            if (state.currentMode === mode) return;
+            const wasRunning = state.isRunning;
+            pauseTimer();
+            state.currentMode = mode;
+            document.getElementById('panel-focus').classList.toggle('opacity-40', mode !== 'focus');
+            document.getElementById('panel-focus').classList.toggle('grayscale-[15%]', mode !== 'focus');
+            document.getElementById('panel-break').classList.toggle('opacity-40', mode !== 'break');
+            document.getElementById('panel-break').classList.toggle('grayscale-[15%]', mode !== 'break');
+            updateDisplay();
+            if (wasRunning) startTimer();
+        }
+
+        function skipOrReset() {
+            pauseTimer();
+            state.focusRemaining = state.focusDuration;
+            state.breakRemaining = state.breakDuration;
+            switchActiveMode(state.currentMode === 'focus' ? 'break' : 'focus');
+        }
+
+        function formatTime(s) {
+            return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+        }
+
+        function updateDisplay() {
+            document.getElementById('time-focus').innerText = formatTime(state.focusRemaining);
+            document.getElementById('time-break').innerText = formatTime(state.breakRemaining);
+            const fRot = ((state.focusDuration - state.focusRemaining) / state.focusDuration) * 360;
+            document.getElementById('focus-handle').style.transform = `rotate(${fRot}deg)`;
+            const bOff = (state.breakRemaining / state.breakDuration) * 276.46;
+            document.getElementById('break-circle').style.strokeDashoffset = 276.46 - bOff;
+        }
+
+        // --- INLINE EDIT LOGIC (DOPPELKLICK) ---
+        function startInlineEdit(event, mode) {
+            event.stopPropagation();
+            
+            if (isEditingInline) return;
+            isEditingInline = true;
+            pauseTimer();
+
+            const displayEl = document.getElementById(`time-${mode}`);
+            const currentSeconds = mode === 'focus' ? state.focusDuration : state.breakDuration;
+            const currentFormatted = formatTime(currentSeconds);
+
+            // Container für Input und Hilfetext
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative flex flex-col items-center justify-center';
+
+            // Dynamisches Texteingabefeld erzeugen
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentFormatted;
+            input.placeholder = "MM:SS oder MMSS";
+            
+            // Perfekte Typographie-Einbindung
+            input.className = 'bg-transparent text-center focus:outline-none font-light border-b-2 border-dashed border-current w-[6ch] timer-digits transition-all duration-200';
+            input.style.fontSize = 'inherit';
+            input.style.fontFamily = 'inherit';
+            input.style.color = 'inherit';
+
+            // Hilfetext direkt unter dem Eingabefeld einblenden
+            const hint = document.createElement('div');
+            hint.className = 'absolute -bottom-8 md:-bottom-10 left-1/2 -translate-x-1/2 text-xs md:text-sm font-normal tracking-wide opacity-80 py-1 px-3 rounded bg-stone-900/85 text-stone-300 border border-stone-800 pointer-events-none whitespace-nowrap z-30 shadow-md';
+            hint.innerText = "Enter zum Speichern (z.B. 1530 für 15:30, oder 25 für 25:00)";
+
+            // Events isolieren
+            input.addEventListener('click', (e) => e.stopPropagation());
+            input.addEventListener('dblclick', (e) => e.stopPropagation());
+
+            const saveAndExit = () => {
+                if (!isEditingInline) return;
+                
+                const rawVal = input.value.trim();
+                let totalSeconds = currentSeconds;
+
+                if (rawVal) {
+                    if (rawVal.includes(':')) {
+                        // Expliziter Doppelpunkt-Modus
+                        const parts = rawVal.split(':');
+                        const m = parseInt(parts[0]) || 0;
+                        const s = parseInt(parts[1]) || 0;
+                        totalSeconds = m * 60 + s;
+                    } else {
+                        // Rein numerische Eingabe (z.B. "1530" oder "25")
+                        const cleanDigits = rawVal.replace(/\D/g, '');
+                        if (cleanDigits.length > 0) {
+                            if (cleanDigits.length <= 2) {
+                                // 1-2 Stellen werden als ganze Minuten interpretiert (z.B. "25" -> 25:00)
+                                totalSeconds = parseInt(cleanDigits) * 60;
+                            } else {
+                                // 3-4 Stellen werden als MMSS interpretiert (z.B. "1530" -> 15:30, "500" -> 05:00)
+                                const s = parseInt(cleanDigits.slice(-2)) || 0;
+                                const m = parseInt(cleanDigits.slice(0, -2)) || 0;
+                                totalSeconds = m * 60 + s;
+                            }
+                        }
+                    }
+                }
+
+                // Grenzwerte einhalten (Mindestens 5 Sekunden, maximal 999 Minuten)
+                if (totalSeconds < 5) totalSeconds = 5;
+                if (totalSeconds > 999 * 60) totalSeconds = 999 * 60;
+
+                if (mode === 'focus') {
+                    state.focusDuration = totalSeconds;
+                    state.focusRemaining = totalSeconds;
+                } else {
+                    state.breakDuration = totalSeconds;
+                    state.breakRemaining = totalSeconds;
+                }
+
+                // Speichern im LocalStorage
+                localStorage.setItem('split_timer_v1_1', JSON.stringify({
+                    fD: state.focusDuration, bD: state.breakDuration,
+                    aT: state.ambientType, aV: state.ambientVolume,
+                    theme: state.activeTheme
+                }));
+
+                isEditingInline = false;
+                updateDisplay();
+            };
+
+            const cancelEdit = () => {
+                isEditingInline = false;
+                updateDisplay();
+            };
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveAndExit();
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                saveAndExit();
+            });
+
+            // Container befüllen
+            wrapper.appendChild(input);
+            wrapper.appendChild(hint);
+
+            // In den DOM einhängen
+            displayEl.innerHTML = '';
+            displayEl.appendChild(wrapper);
+            
+            input.focus();
+            input.select();
+        }
+
+        // --- SETTINGS MODAL ---
+        function toggleSettingsModal(s) {
+            const m = document.getElementById('modal-settings');
+            if (s) {
+                document.getElementById('input-focus-time').value = state.focusDuration / 60;
+                document.getElementById('input-break-time').value = state.breakDuration / 60;
+                document.getElementById('range-ambient-vol').value = state.ambientVolume * 100;
+                document.getElementById('select-ambient-type').value = state.ambientType;
+                m.classList.remove('opacity-0', 'pointer-events-none');
+                m.firstElementChild.classList.remove('scale-95');
+            } else {
+                m.classList.add('opacity-0', 'pointer-events-none');
+                m.firstElementChild.classList.add('scale-95');
+            }
+        }
+
+        function saveSettings() {
+            state.focusDuration = (parseInt(document.getElementById('input-focus-time').value) || 25) * 60;
+            state.breakDuration = (parseInt(document.getElementById('input-break-time').value) || 5) * 60;
+            state.ambientType = document.getElementById('select-ambient-type').value;
+            state.ambientVolume = document.getElementById('range-ambient-vol').value / 100;
+            
+            if (!state.isRunning) {
+                state.focusRemaining = state.focusDuration;
+                state.breakRemaining = state.breakDuration;
+            }
+
+            localStorage.setItem('split_timer_v1_1', JSON.stringify({
+                fD: state.focusDuration, bD: state.breakDuration,
+                aT: state.ambientType, aV: state.ambientVolume,
+                theme: state.activeTheme
+            }));
+            updateDisplay(); toggleSettingsModal(false);
+            if (state.isAmbientPlaying) startAmbientSound();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = JSON.parse(localStorage.getItem('split_timer_v1_1') || '{}');
+            if (saved.fD) {
+                state.focusDuration = saved.fD; state.breakDuration = saved.bD;
+                state.ambientType = saved.aT || 'brown'; state.ambientVolume = saved.aV !== undefined ? saved.aV : 0.3;
+                setTheme(saved.theme || 'classic');
+            }
+            state.focusRemaining = state.focusDuration;
+            state.breakRemaining = state.breakDuration;
+            lucide.createIcons();
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
+<!--
+--- CHANGE LOG ---
+v1.3.0:
+- Umstellung des Inline-Editors auf Textfeld zur freien Eingabe von Formaten.
+- Intelligenter Parser hinzugefügt: Zifferneingaben wie "1530" werden zu "15:30", während "25" als "25:00" interpretiert wird.
+- Eleganten Inline-Hilfetext unter dem Ziffernfeld während des Editiermodus hinzugefügt.
+- Vier neue, prozedurale Ambient-Generatoren implementiert: Pink Noise, White Noise, Ocean Waves (Meeresrauschen) und Fireplace (Kaminfeuer).
+- LFO-Modulationen und Wood-Crackling prozedural im Buffer generiert für maximale Offline-Stabilität und Performance.
+- Integration aller neuen Ambient-Typen im Einstellungsmenü.
+-->
