@@ -50,6 +50,29 @@
         .settings-scroll::-webkit-scrollbar { width: 4px; }
         .settings-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
+        #main-container { min-height: 0; overflow-y: auto; }
+        section { min-height: 0; }
+
+        @media (max-width: 640px) {
+            .panel-circle { width: 5rem; height: 5rem; }
+            .panel-icon { width: 2rem; height: 2rem; }r
+            .timer-display { font-size: 4.25rem; }
+            .bounds-text { font-size: 0.75rem; }
+            #bounds-focus,
+            #bounds-break { display: none; }
+        }
+
+        @media (max-height: 700px) {
+            .panel-circle { width: 8rem; height: 8rem; }
+            .panel-icon { width: 2.5rem; height: 2.5rem; }
+            .timer-display { font-size: 3.5rem; }
+            .bounds-text { font-size: 0.7rem; }
+            #bounds-focus { display: none; }
+            .controls-wrapper { gap: 0.5rem; padding: 0.6rem 0.75rem; }
+            .control-button { padding: 0.45rem; }
+            .control-icon { width: 1.05rem; height: 1.05rem; }
+        }
+
         /* Verhindert die unschönen Pfeiltasten in der Zahlen-Eingabe */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
@@ -63,68 +86,78 @@
 </head>
 <body class="text-stone-100 overflow-hidden h-screen w-screen flex flex-col justify-between">
 
-    <main id="main-container" class="flex-1 flex flex-col md:flex-row h-full w-full relative">
+    <main id="main-container" class="flex-1 flex flex-col md:flex-row h-full w-full relative min-h-0 overflow-y-auto">
         
         <!-- FOKUS-PANEL -->
         <section id="panel-focus" 
                  onclick="switchActiveMode('focus')"
-                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer">
+                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer min-h-0">
             
             <h2 class="text-2xl md:text-3xl font-light tracking-[0.25em] uppercase mb-6 md:mb-10 text-center">Fokus</h2>
             
-            <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
-                <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <!-- Hintergrund-Hilfskreis -->
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" class="opacity-10" />
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-30" />
-                    <!-- Schrumpfender Fortschrittsbalken -->
-                    <circle id="focus-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100 opacity-90" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
-                    <!-- Rotierender Zeiger -->
-                    <circle id="focus-handle" cx="94" cy="50" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
-                </svg>
+            <div class="flex flex-row md:flex-col items-center justify-center gap-6 mb-6 md:mb-10 w-full max-w-xs">
+                <div class="panel-circle relative w-16 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 flex items-center justify-center flex-shrink-0">
+                    <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        <!-- Hintergrund-Hilfskreis -->
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" class="opacity-10" />
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="1 3" class="opacity-30" />
+                        <!-- Schrumpfender Fortschrittsbalken -->
+                        <circle id="focus-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100 opacity-90" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
+                        <!-- Rotierender Zeiger -->
+                        <circle id="focus-handle" cx="94" cy="50" r="2.5" fill="currentColor" class="transition-transform duration-100 origin-[50px_50px]" />
+                    </svg>
+                    
+                    <!-- Lucide Icon: Brain/Focus -->
+                    <i data-lucide="brain" class="panel-icon w-9 h-9 sm:w-16 sm:h-16 md:w-28 md:h-28 opacity-90"></i>
+                </div>
                 
-                <!-- Lucide Icon: Brain/Focus -->
-                <i data-lucide="brain" class="w-20 h-20 md:w-28 md:h-28 opacity-90"></i>
-            </div>
-            
-            <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
-            <div class="relative flex flex-col items-center w-full max-w-xs px-4">
-                <div id="time-focus" 
-                     ondblclick="startInlineEdit(event, 'focus')" 
-                     class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
-                     title="Doppelklick zum schnellen Ändern (z.B. 1530 für 15:30)">25:00</div>
-                <!-- Start- und Endzeit-Anzeige -->
-                <div id="bounds-focus" class="mt-4 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center">Projektion: --:-- ➔ --:--</div>
+                <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
+                <div class="relative flex flex-col items-center md:items-center w-full px-4">
+                    <div id="time-focus" 
+                         ondblclick="startInlineEdit(event, 'focus')" 
+                         class="timer-digits timer-display text-5xl sm:text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
+                         title="Doppelklick zum schnellen Ändern (z.B. 1530 für 15:30)">25:00</div>
+                    <!-- Start- und Endzeit-Anzeige -->
+                    <div id="bounds-focus" class="mt-4 px-4 py-1.5 rounded-full text-[11px] 
+                        sm:text-xs 
+                        md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center bounds-text">
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- PAUSEN-PANEL -->
         <section id="panel-break" 
                  onclick="switchActiveMode('break')"
-                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer opacity-40 grayscale-[15%]">
+                 class="flex-1 flex flex-col justify-center items-center p-6 transition-dim cursor-pointer opacity-40 grayscale-[15%] min-h-0">
             
             <h2 class="text-2xl md:text-3xl font-light tracking-[0.25em] uppercase mb-6 md:mb-10 text-center">Pause</h2>
             
-            <div class="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6 md:mb-10">
-                <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <!-- Hintergrund-Hilfskreis -->
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-10" />
-                    <!-- Schrumpfender Fortschrittsbalken -->
-                    <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
-                </svg>
+            <div class="flex flex-row md:flex-col items-center justify-center gap-6 mb-6 md:mb-10 w-full max-w-xs">
+                <div class="panel-circle relative w-16 h-24 sm:w-40 sm:h-40 md:w-64 md:h-64 flex items-center justify-center flex-shrink-0">
+                    <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        <!-- Hintergrund-Hilfskreis -->
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="1.5" class="opacity-10" />
+                        <!-- Schrumpfender Fortschrittsbalken -->
+                        <circle id="break-circle" cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="276.46 276.46" stroke-dashoffset="0" stroke-linecap="round" class="transition-all duration-100" style="transform: scale(1, -1); transform-origin: 50px 50px;" />
+                    </svg>
+                    
+                    <!-- Lucide Icon: Coffee -->
+                    <i data-lucide="coffee" class="panel-icon w-9 h-9 sm:w-16 sm:h-16 md:w-28 md:h-28 opacity-90"></i>
+                </div>
                 
-                <!-- Lucide Icon: Coffee -->
-                <i data-lucide="coffee" class="w-20 h-20 md:w-28 md:h-28 opacity-90"></i>
-            </div>
-            
-            <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
-            <div class="relative flex flex-col items-center w-full max-w-xs px-4">
-                <div id="time-break" 
-                     ondblclick="startInlineEdit(event, 'break')" 
-                     class="timer-digits text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
-                     title="Doppelklick zum schnellen Ändern (z.B. 0500 für 05:00)">05:00</div>
-                <!-- Start- und Endzeit-Anzeige -->
-                <div id="bounds-break" class="mt-4 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center">Projektion: --:-- ➔ --:--</div>
+                <!-- Doppelklick startet den optimierten Smart-Edit-Modus -->
+                <div class="relative flex flex-col items-center md:items-center w-full px-4">
+                    <div id="time-break" 
+                         ondblclick="startInlineEdit(event, 'break')" 
+                         class="timer-digits timer-display text-5xl sm:text-7xl md:text-9xl font-light tracking-normal cursor-text select-none hover:opacity-85 transition-all duration-200" 
+                         title="Doppelklick zum schnellen Ändern (z.B. 0500 für 05:00)">05:00</div>
+                    <!-- Start- und Endzeit-Anzeige -->
+                    <div id="bounds-break" class="mt-4 px-4 py-1.5 rounded-full text-[11px]
+                      sm:text-xs 
+                      md:text-sm font-medium bg-black/10 backdrop-blur-sm tracking-wide opacity-80 uppercase transition-all duration-300 text-center bounds-text">Projektion: --:-- ➔ --:--
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -134,28 +167,27 @@
     <!-- Großer Hit-Bereich (pb-6 pt-12 px-12), damit das Menü leicht mit der Maus/Finger erwischt werden kann -->
     <div class="fixed bottom-0 left-1/2 -translate-x-1/2 z-20 pb-6 pt-12 px-12 group cursor-default">
         <!-- Das eigentliche Menü. Im Grundzustand skaliert auf 75% und halb transparent. -->
-        <div class="flex items-center justify-center gap-2 md:gap-3 bg-stone-900/90 backdrop-blur-md px-4 py-2 md:px-5 md:py-3 rounded-full border border-stone-800 shadow-2xl transition-all duration-300 ease-out transform scale-75 opacity-50 group-hover:scale-100 group-hover:opacity-100 focus-within:scale-100 focus-within:opacity-100">
-            
-            <button onclick="toggleSettingsModal(true)" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Einstellungen">
-                <i data-lucide="settings" class="w-5 h-5 md:w-6 md:h-6"></i>
+        <div class="controls-wrapper flex items-center justify-center gap-2 md:gap-3 bg-stone-900/90 backdrop-blur-md px-4 py-2 md:px-5 md:py-3 rounded-full border border-stone-800 shadow-2xl transition-all duration-300 ease-out transform scale-75 opacity-50 group-hover:scale-100 group-hover:opacity-100 focus-within:scale-100 focus-within:opacity-100">
+            <button onclick="toggleSettingsModal(true)" class="control-button p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Einstellungen">
+                <i data-lucide="settings" class="control-icon w-5 h-5 md:w-6 md:h-6"></i>
             </button>
 
             <div class="h-5 md:h-6 w-[1px] bg-stone-800"></div>
 
-            <button id="btn-play-pause" onclick="toggleTimer()" class="p-3 md:p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-all shadow-lg active:scale-95 outline-none">
-                <i id="play-icon" data-lucide="play" class="w-5 h-5 md:w-6 md:h-6"></i>
-                <i id="pause-icon" data-lucide="pause" class="w-5 h-5 md:w-6 md:h-6 hidden"></i>
+            <button id="btn-play-pause" onclick="toggleTimer()" class="control-button p-3 md:p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-all shadow-lg active:scale-95 outline-none">
+                <i id="play-icon" data-lucide="play" class="control-icon w-5 h-5 md:w-6 md:h-6"></i>
+                <i id="pause-icon" data-lucide="pause" class="control-icon w-5 h-5 md:w-6 md:h-6 hidden"></i>
             </button>
 
-            <button onclick="skipOrReset()" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Nächste Phase">
-                <i data-lucide="skip-forward" class="w-5 h-5 md:w-6 md:h-6"></i>
+            <button onclick="skipOrReset()" class="control-button p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Nächste Phase">
+                <i data-lucide="skip-forward" class="control-icon w-5 h-5 md:w-6 md:h-6"></i>
             </button>
 
             <div class="h-5 md:h-6 w-[1px] bg-stone-800"></div>
 
-            <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors relative outline-none" title="Ambient Sound an/aus">
-                <i id="sound-on-icon" data-lucide="volume-2" class="w-5 h-5 md:w-6 md:h-6 hidden"></i>
-                <i id="sound-off-icon" data-lucide="volume-x" class="w-5 h-5 md:w-6 md:h-6 text-rose-500"></i>
+            <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="control-button p-2 md:p-3 text-stone-400 hover:text-white transition-colors relative outline-none" title="Ambient Sound an/aus">
+                <i id="sound-on-icon" data-lucide="volume-2" class="control-icon w-5 h-5 md:w-6 md:h-6 hidden"></i>
+                <i id="sound-off-icon" data-lucide="volume-x" class="control-icon w-5 h-5 md:w-6 md:h-6 text-rose-500"></i>
             </button>
         </div>
     </div>
@@ -783,16 +815,22 @@
             }
         }
 
+        function updateActivePanelVisualState() {
+            const focusPanel = document.getElementById('panel-focus');
+            const breakPanel = document.getElementById('panel-break');
+            focusPanel.classList.toggle('opacity-40', state.currentMode !== 'focus');
+            focusPanel.classList.toggle('grayscale-[15%]', state.currentMode !== 'focus');
+            breakPanel.classList.toggle('opacity-40', state.currentMode !== 'break');
+            breakPanel.classList.toggle('grayscale-[15%]', state.currentMode !== 'break');
+        }
+
         function switchActiveMode(mode) {
             if (isEditingInline) return;
             if (state.currentMode === mode) return;
             const wasRunning = state.isRunning;
             pauseTimer();
             state.currentMode = mode;
-            document.getElementById('panel-focus').classList.toggle('opacity-40', mode !== 'focus');
-            document.getElementById('panel-focus').classList.toggle('grayscale-[15%]', mode !== 'focus');
-            document.getElementById('panel-break').classList.toggle('opacity-40', mode !== 'break');
-            document.getElementById('panel-break').classList.toggle('grayscale-[15%]', mode !== 'break');
+            updateActivePanelVisualState();
             
             state.startTimestamp = null;
             state.endTimestamp = null;
@@ -1020,8 +1058,9 @@
             state.focusEndSound = document.getElementById('select-focus-end-sound').value;
             state.breakEndSound = document.getElementById('select-break-end-sound').value;
             state.panelOrder = document.getElementById('select-panel-order').value;
-            
             if (!state.isRunning) {
+                state.currentMode = state.panelOrder === 'break-first' ? 'break' : 'focus';
+                updateActivePanelVisualState();
                 state.focusRemaining = state.focusDuration;
                 state.breakRemaining = state.breakDuration;
                 state.startTimestamp = null;
@@ -1121,6 +1160,8 @@
             state.breakRemaining = state.breakDuration;
             
             applyPanelOrder();
+            state.currentMode = state.panelOrder === 'break-first' ? 'break' : 'focus';
+            updateActivePanelVisualState();
             lucide.createIcons();
             updateDisplay();
 
