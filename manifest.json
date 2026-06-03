@@ -1,7 +1,7 @@
 {
   "name": "Brocus Focus Timer",
   "short_name": "Brocus",
-  "description": "Ein Fokus- und Pausen-Timer zur Steigerung der Produktivität.",
+  "description": "Ein Pausen- und Fokus-Timer.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0c0a09",

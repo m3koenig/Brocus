@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Split-Screen Study Timer</title>
+    <title>Break and Focus Timer</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
-    <!-- <link rel="manifest" href="manifest.json"> -->
+    <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
@@ -55,7 +55,7 @@
 
         @media (max-width: 640px) {
             .panel-circle { width: 5rem; height: 5rem; }
-            .panel-icon { width: 2rem; height: 2rem; }r
+            .panel-icon { width: 2rem; height: 2rem; }
             .timer-display { font-size: 4.25rem; }
             .bounds-text { font-size: 0.75rem; }
             #bounds-focus,
@@ -351,14 +351,12 @@
     </div>
 
     <script>
-        // PWA Service Worker Registrierung (Deaktiviert für Vorschau)
-        /*
+        // PWA Service Worker Registrierung (Deaktiviert für Vorschau)        
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js');
             });
         }
-        */
 
         // --- KONFIGURATION & THEMES ---
         const THEMES = {
