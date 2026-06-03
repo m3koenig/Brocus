@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <!-- <link rel="manifest" href="manifest.json"> -->
 
     <style>
         :root {
@@ -63,7 +63,7 @@
 </head>
 <body class="text-stone-100 overflow-hidden h-screen w-screen flex flex-col justify-between">
 
-    <main class="flex-1 flex flex-col md:flex-row h-full w-full relative">
+    <main id="main-container" class="flex-1 flex flex-col md:flex-row h-full w-full relative">
         
         <!-- FOKUS-PANEL -->
         <section id="panel-focus" 
@@ -130,30 +130,34 @@
 
     </main>
 
-    <!-- FLOATING BEDIENTASTEN -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-3 bg-stone-900/90 backdrop-blur-md px-5 py-3 rounded-full border border-stone-800 shadow-2xl">
-        
-        <button onclick="toggleSettingsModal(true)" class="p-3 text-stone-400 hover:text-white transition-colors" title="Einstellungen">
-            <i data-lucide="settings" class="w-6 h-6"></i>
-        </button>
+    <!-- FLOATING BEDIENTASTEN (Dynamisch einklappend) -->
+    <!-- Großer Hit-Bereich (pb-6 pt-12 px-12), damit das Menü leicht mit der Maus/Finger erwischt werden kann -->
+    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 z-20 pb-6 pt-12 px-12 group cursor-default">
+        <!-- Das eigentliche Menü. Im Grundzustand skaliert auf 75% und halb transparent. -->
+        <div class="flex items-center justify-center gap-2 md:gap-3 bg-stone-900/90 backdrop-blur-md px-4 py-2 md:px-5 md:py-3 rounded-full border border-stone-800 shadow-2xl transition-all duration-300 ease-out transform scale-75 opacity-50 group-hover:scale-100 group-hover:opacity-100 focus-within:scale-100 focus-within:opacity-100">
+            
+            <button onclick="toggleSettingsModal(true)" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Einstellungen">
+                <i data-lucide="settings" class="w-5 h-5 md:w-6 md:h-6"></i>
+            </button>
 
-        <div class="h-6 w-[1px] bg-stone-800"></div>
+            <div class="h-5 md:h-6 w-[1px] bg-stone-800"></div>
 
-        <button id="btn-play-pause" onclick="toggleTimer()" class="p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-all shadow-lg active:scale-95">
-            <i id="play-icon" data-lucide="play" class="w-6 h-6"></i>
-            <i id="pause-icon" data-lucide="pause" class="w-6 h-6 hidden"></i>
-        </button>
+            <button id="btn-play-pause" onclick="toggleTimer()" class="p-3 md:p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full transition-all shadow-lg active:scale-95 outline-none">
+                <i id="play-icon" data-lucide="play" class="w-5 h-5 md:w-6 md:h-6"></i>
+                <i id="pause-icon" data-lucide="pause" class="w-5 h-5 md:w-6 md:h-6 hidden"></i>
+            </button>
 
-        <button onclick="skipOrReset()" class="p-3 text-stone-400 hover:text-white transition-colors" title="Nächste Phase">
-            <i data-lucide="skip-forward" class="w-6 h-6"></i>
-        </button>
+            <button onclick="skipOrReset()" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Nächste Phase">
+                <i data-lucide="skip-forward" class="w-5 h-5 md:w-6 md:h-6"></i>
+            </button>
 
-        <div class="h-6 w-[1px] bg-stone-800"></div>
+            <div class="h-5 md:h-6 w-[1px] bg-stone-800"></div>
 
-        <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-3 text-stone-400 hover:text-white transition-colors relative" title="Ambient Sound an/aus">
-            <i id="sound-on-icon" data-lucide="volume-2" class="w-6 h-6 hidden"></i>
-            <i id="sound-off-icon" data-lucide="volume-x" class="w-6 h-6 text-rose-500"></i>
-        </button>
+            <button id="btn-sound-ambient" onclick="toggleAmbientSound()" class="p-2 md:p-3 text-stone-400 hover:text-white transition-colors relative outline-none" title="Ambient Sound an/aus">
+                <i id="sound-on-icon" data-lucide="volume-2" class="w-5 h-5 md:w-6 md:h-6 hidden"></i>
+                <i id="sound-off-icon" data-lucide="volume-x" class="w-5 h-5 md:w-6 md:h-6 text-rose-500"></i>
+            </button>
+        </div>
     </div>
 
     <!-- EINSTELLUNGEN MODAL -->
@@ -186,7 +190,7 @@
                     </div>
                 </div>
 
-                <!-- Zeiteinstellungen -->
+                <!-- Zeiteinstellungen & Layout -->
                 <div class="grid grid-cols-2 gap-4 pt-3 border-t border-stone-800">
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1.5">Fokus Dauer (Min)</label>
@@ -195,6 +199,13 @@
                     <div>
                         <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1.5">Pause Dauer (Min)</label>
                         <input type="number" id="input-break-time" min="1" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-white">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-400 mb-1.5">Panel Reihenfolge</label>
+                        <select id="select-panel-order" class="w-full bg-stone-800 border border-stone-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                            <option value="focus-first">Fokus zuerst (Links / Oben)</option>
+                            <option value="break-first">Pause zuerst (Links / Oben)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -308,12 +319,14 @@
     </div>
 
     <script>
-        // PWA Service Worker Registrierung
+        // PWA Service Worker Registrierung (Deaktiviert für Vorschau)
+        /*
         if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js');
-        });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
         }
+        */
 
         // --- KONFIGURATION & THEMES ---
         const THEMES = {
@@ -333,7 +346,8 @@
             autoSwitch: true,
             bellVolume: 0.7,
             isAmbientPlaying: false,
-            activeTheme: 'sea', // Standardtheme: Sea (Blau)
+            activeTheme: 'sea', 
+            panelOrder: 'focus-first', // Standard-Reihenfolge
             
             // Getrennte Ambient-Konfiguration für Fokus und Pause
             focusAmbientType: 'brown',
@@ -354,14 +368,14 @@
         let audioCtx = null;
         let ambientSource = null;
         let ambientGainNode = null;
-        let isEditingInline = false; // Flag um Klicks während der Editierung zu blocken
+        let isEditingInline = false; 
 
         // Modal Audio Preview Variablen
         let previewSource = null;
         let previewGainNode = null;
         let activePreviewPhase = null;
 
-        // --- THEME MANAGEMENT ---
+        // --- THEME & LAYOUT MANAGEMENT ---
         function setTheme(themeKey) {
             state.activeTheme = themeKey;
             const t = THEMES[themeKey];
@@ -370,6 +384,18 @@
             root.style.setProperty('--focus-text', t.fTxt);
             root.style.setProperty('--break-bg', t.bBg);
             root.style.setProperty('--break-text', t.bTxt);
+        }
+
+        function applyPanelOrder() {
+            const focusPanel = document.getElementById('panel-focus');
+            const breakPanel = document.getElementById('panel-break');
+            if (state.panelOrder === 'break-first') {
+                focusPanel.style.order = '2';
+                breakPanel.style.order = '1';
+            } else {
+                focusPanel.style.order = '1';
+                breakPanel.style.order = '2';
+            }
         }
 
         // --- AUDIO ENGINE ---
@@ -389,7 +415,6 @@
             mainGain.connect(audioCtx.destination);
 
             if (soundType === 'bell') {
-                // Klassischer harmonischer Glockenschlag
                 [220, 330, 440, 554, 880].forEach((freq, i) => {
                     const osc = audioCtx.createOscillator();
                     const g = audioCtx.createGain();
@@ -401,7 +426,6 @@
                     osc.start(); osc.stop(now + 4.0);
                 });
             } else if (soundType === 'digital') {
-                // Digitaler Beep-Alarm (Beep-Beep-Beep)
                 const delays = [0, 0.25, 0.5];
                 delays.forEach(delay => {
                     const osc = audioCtx.createOscillator();
@@ -416,7 +440,6 @@
                     osc.start(now + delay); osc.stop(now + delay + 0.2);
                 });
             } else if (soundType === 'harp') {
-                // Harfen-Akkord arpeggiert (Soothing Harp Chord in C-Dur)
                 const harpFreqs = [261.63, 329.63, 392.00, 523.25, 659.25];
                 harpFreqs.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
@@ -430,7 +453,6 @@
                     osc.start(now + idx * 0.15); osc.stop(now + idx * 0.15 + 2.0);
                 });
             } else if (soundType === 'triumph') {
-                // Triumphales Aufwärts-Arpeggio (Heroischer Synthesizer-Akkord)
                 const notes = [196.00, 246.94, 293.66, 392.00, 493.88, 587.33];
                 notes.forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
@@ -460,8 +482,8 @@
             const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
             const data = buffer.getChannelData(0);
             
-            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0; // Rosa Rauschen Filter
-            let lastOut = 0.0; // Braunes Rauschen Filter
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            let lastOut = 0.0; 
 
             for (let i = 0; i < bufferSize; i++) {
                 const white = Math.random() * 2 - 1;
@@ -516,18 +538,16 @@
                     data[i] = (lastOut + (0.018 * white)) / 1.018;
                     lastOut = data[i];
                     data[i] *= 0.65;
-                    
                     if (Math.random() > 0.9995) {
                         data[i] += (Math.random() * 2 - 1) * 0.28;
                     }
                 } 
                 else if (type === 'lofi') {
-                    // Lofi Chords (Em7 -> Am7 -> Dm7 -> G7) - Ohne jegliches Rauschen
                     const lofiChords = [
-                        [164.81, 196.00, 246.94, 293.66], // Em7
-                        [220.00, 261.63, 329.63, 392.00], // Am7
-                        [146.83, 174.61, 220.00, 261.63], // Dm7
-                        [196.00, 246.94, 293.66, 349.23]  // G7
+                        [164.81, 196.00, 246.94, 293.66], 
+                        [220.00, 261.63, 329.63, 392.00], 
+                        [146.83, 174.61, 220.00, 261.63], 
+                        [196.00, 246.94, 293.66, 349.23]  
                     ];
                     let chordIdx = Math.floor(t / 2.5) % 4;
                     let chordTime = t % 2.5;
@@ -538,25 +558,19 @@
 
                     let waveSum = 0;
                     const freqs = lofiChords[chordIdx];
-                    freqs.forEach(f => {
-                        waveSum += Math.sin(2 * Math.PI * f * t) * 0.22;
-                    });
+                    freqs.forEach(f => { waveSum += Math.sin(2 * Math.PI * f * t) * 0.22; });
 
-                    // Weiches Vinylknistern bleibt für die Atmosphäre erhalten
                     let crackle = 0;
-                    if (Math.random() > 0.9996) {
-                        crackle = (Math.random() * 2 - 1) * 0.4;
-                    }
+                    if (Math.random() > 0.9996) crackle = (Math.random() * 2 - 1) * 0.4;
 
                     data[i] = (waveSum * env * 0.15) + crackle * 0.03;
                 } 
                 else if (type === 'lofi_nostalgia') {
-                    // Nostalgische Progression (Fmaj7 -> G6 -> Em7 -> Am7) - Rauschfrei
                     const chords = [
-                        [87.31, 220.00, 261.63, 329.63], // Fmaj7
-                        [98.00, 246.94, 293.66, 329.63], // G6
-                        [82.41, 196.00, 246.94, 293.66], // Em7
-                        [110.00, 261.63, 329.63, 392.00]  // Am7
+                        [87.31, 220.00, 261.63, 329.63],
+                        [98.00, 246.94, 293.66, 329.63],
+                        [82.41, 196.00, 246.94, 293.66],
+                        [110.00, 261.63, 329.63, 392.00]
                     ];
                     let chordIdx = Math.floor(t / 2.5) % 4;
                     let chordTime = t % 2.5;
@@ -565,29 +579,25 @@
                     if (chordTime < 0.3) env = chordTime / 0.3;
                     else if (chordTime > 2.2) env = (2.5 - chordTime) / 0.3;
 
-                    // Wow & Flutter (Tape Saturation Simulation) für Vintage-Charakter
                     let wow = 0.00025 * Math.sin(2 * Math.PI * 3.2 * t);
                     let waveSum = 0;
                     const freqs = chords[chordIdx];
                     freqs.forEach(f => {
                         let p = 2 * Math.PI * f * (t + wow);
-                        waveSum += Math.sin(p) * 0.18 + Math.sin(p * 2) * 0.05; // Leichte Obertöne für Wärme
+                        waveSum += Math.sin(p) * 0.18 + Math.sin(p * 2) * 0.05;
                     });
 
                     let crackle = 0;
-                    if (Math.random() > 0.9997) {
-                        crackle = (Math.random() * 2 - 1) * 0.35;
-                    }
+                    if (Math.random() > 0.9997) crackle = (Math.random() * 2 - 1) * 0.35;
 
                     data[i] = (waveSum * env * 0.13) + crackle * 0.02;
                 }
                 else if (type === 'lofi_cozy') {
-                    // Cozy Café Progression (Am9 -> D9 -> Gmaj7 -> Cmaj7) - Rauschfrei
                     const chords = [
-                        [110.00, 130.81, 196.00, 246.94], // Am9 (Sparsames Voicing)
-                        [146.83, 185.00, 220.00, 329.63], // D9
-                        [98.00, 146.83, 185.00, 220.00],  // Gmaj7
-                        [130.81, 164.81, 196.00, 246.94]  // Cmaj7
+                        [110.00, 130.81, 196.00, 246.94],
+                        [146.83, 185.00, 220.00, 329.63],
+                        [98.00, 146.83, 185.00, 220.00], 
+                        [130.81, 164.81, 196.00, 246.94] 
                     ];
                     let chordIdx = Math.floor(t / 2.5) % 4;
                     let chordTime = t % 2.5;
@@ -603,7 +613,6 @@
                         waveSum += Math.sin(2 * Math.PI * f * detune * t) * 0.2;
                     });
 
-                    // Subtiles E-Piano/Rhodes-Chime-Event auf Beat 2
                     let chime = 0;
                     if (chordTime > 0.6 && chordTime < 1.1) {
                         let chimeT = chordTime - 0.6;
@@ -611,19 +620,16 @@
                     }
 
                     let crackle = 0;
-                    if (Math.random() > 0.9995) {
-                        crackle = (Math.random() * 2 - 1) * 0.3;
-                    }
+                    if (Math.random() > 0.9995) crackle = (Math.random() * 2 - 1) * 0.3;
 
                     data[i] = (waveSum * env * 0.12) + chime + crackle * 0.02;
                 }
                 else if (type === 'lofi_sunset') {
-                    // Sunset Progression (Cmaj7 -> Fmaj7 -> Dm7 -> G7) - Rauschfrei
                     const chords = [
-                        [130.81, 164.81, 196.00, 246.94], // Cmaj7
-                        [87.31, 174.61, 220.00, 261.63],  // Fmaj7
-                        [146.83, 174.61, 220.00, 261.63], // Dm7
-                        [98.00, 146.83, 246.94, 293.66]   // G7
+                        [130.81, 164.81, 196.00, 246.94],
+                        [87.31, 174.61, 220.00, 261.63], 
+                        [146.83, 174.61, 220.00, 261.63],
+                        [98.00, 146.83, 246.94, 293.66]  
                     ];
                     let chordIdx = Math.floor(t / 2.5) % 4;
                     let chordTime = t % 2.5;
@@ -632,7 +638,6 @@
                     if (chordTime < 0.3) env = chordTime / 0.3;
                     else if (chordTime > 2.2) env = (2.5 - chordTime) / 0.3;
 
-                    // Extrem langsamer Modulations-Filter Sweep (LFO)
                     let filterSweep = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.08 * t);
                     let waveSum = 0;
                     const freqs = chords[chordIdx];
@@ -643,16 +648,13 @@
                     });
 
                     let crackle = 0;
-                    if (Math.random() > 0.9997) {
-                        crackle = (Math.random() * 2 - 1) * 0.25;
-                    }
+                    if (Math.random() > 0.9997) crackle = (Math.random() * 2 - 1) * 0.25;
 
                     data[i] = (waveSum * env * 0.14) + crackle * 0.015;
                 }
                 else if (type === 'space') {
-                    // Cosmic Space Drone - Völlig rauschfrei und extrem atmosphärisch
-                    const f1 = 55.0; // A1
-                    const f2 = 82.41; // E2
+                    const f1 = 55.0; 
+                    const f2 = 82.41; 
                     let spaceWave = Math.sin(2 * Math.PI * f1 * t) * 0.4 + Math.sin(2 * Math.PI * f2 * t) * 0.3;
                     
                     let starPing = 0;
@@ -663,7 +665,6 @@
                     data[i] = (spaceWave + starPing) * 0.12;
                 } 
                 else if (type === 'birds') {
-                    // Waldesvögel - Reine, klare Synthesizer-Vogelrufe auf leisem, kristallklarem Hintergrund
                     let birdChirp = 0;
                     const cycle = t % 3.0;
                     if (cycle > 1.2 && cycle < 1.45) {
@@ -681,7 +682,6 @@
             initAudio();
             stopAmbientSoundOnly();
             
-            // Lese phasenabhängige Konfigurationen aus
             const activeType = state.currentMode === 'focus' ? state.focusAmbientType : state.breakAmbientType;
             const activeVolume = state.currentMode === 'focus' ? state.focusAmbientVolume : state.breakAmbientVolume;
             
@@ -726,13 +726,11 @@
             if (state.isRunning || isEditingInline) return;
             state.isRunning = true;
             
-            // Friere Start- und Endzeitpunkt ein, wenn der Timer startet
             const now = new Date();
             const remaining = state.currentMode === 'focus' ? state.focusRemaining : state.breakRemaining;
             state.startTimestamp = new Date(now);
             state.endTimestamp = new Date(now.getTime() + remaining * 1000);
 
-            // Verhindere Soundlecks aus dem Preview, falls der Timer startet
             stopPreviewAmbient();
 
             if (!state.isAmbientPlaying) startAmbientSound();
@@ -765,20 +763,27 @@
             const finishedMode = state.currentMode;
             pauseTimer(); 
             
-            // Triggere den phasenabhängigen Alarm
             const activeAlarm = finishedMode === 'focus' ? state.focusEndSound : state.breakEndSound;
             playAlarmSound(activeAlarm);
+
+            // ZEIT ZURÜCKSETZEN FÜR ENDLOS-LOOP
+            if (finishedMode === 'focus') {
+                state.focusRemaining = state.focusDuration;
+            } else {
+                state.breakRemaining = state.breakDuration;
+            }
             
             if (state.autoSwitch) {
                 setTimeout(() => { 
                     switchActiveMode(finishedMode === 'focus' ? 'break' : 'focus'); 
                     startTimer(); 
                 }, 1500);
+            } else {
+                updateDisplay();
             }
         }
 
         function switchActiveMode(mode) {
-            // Wenn gerade editiert wird, soll kein Phasenwechsel via Panel-Klick getriggert werden
             if (isEditingInline) return;
             if (state.currentMode === mode) return;
             const wasRunning = state.isRunning;
@@ -789,7 +794,6 @@
             document.getElementById('panel-break').classList.toggle('opacity-40', mode !== 'break');
             document.getElementById('panel-break').classList.toggle('grayscale-[15%]', mode !== 'break');
             
-            // Bei Wechsel die Zeitstempel zurücksetzen, damit Vorschau wieder dynamisch läuft
             state.startTimestamp = null;
             state.endTimestamp = null;
 
@@ -798,7 +802,6 @@
             if (wasRunning) {
                 startTimer();
             } else if (state.isAmbientPlaying) {
-                // Falls nur Ambient-Sound lief: Mit neuen Phaseneinstellungen neustarten
                 startAmbientSound();
             }
         }
@@ -823,54 +826,42 @@
         }
 
         function updateDisplay() {
-            // Zeitziffern
             document.getElementById('time-focus').innerText = formatTime(state.focusRemaining);
             document.getElementById('time-break').innerText = formatTime(state.breakRemaining);
             
             const circumference = 276.46;
 
-            // 1. Fokus-Ring (Schrumpfender Fortschrittsbalken und Zeiger)
             const focusRatio = state.focusRemaining / state.focusDuration;
             const focusFilledLength = focusRatio * circumference;
-            
             const focusCircle = document.getElementById('focus-circle');
             focusCircle.setAttribute('stroke-dasharray', `${focusFilledLength} ${circumference}`);
             focusCircle.setAttribute('stroke-dashoffset', '0');
-
-            // Der Punkt bildet exakt den beweglichen Start- und End-Kopf des schrumpfenden Bogens.
             const fRot = - (focusRatio * 360);
             document.getElementById('focus-handle').style.transform = `rotate(${fRot}deg)`;
             
-            // 2. Pausen-Ring (Schrumpfender Fortschrittsbalken)
             const breakRatio = state.breakRemaining / state.breakDuration;
             const breakFilledLength = breakRatio * circumference;
-            
             const breakCircle = document.getElementById('break-circle');
             breakCircle.setAttribute('stroke-dasharray', `${breakFilledLength} ${circumference}`);
             breakCircle.setAttribute('stroke-dashoffset', '0');
 
-            // 3. Start- und Endzeit-Projektionen berechnen
             let displayStartStr = "";
             let displayEndStr = "";
             let prefix = "";
 
             if (state.isRunning && state.startTimestamp && state.endTimestamp) {
-                // Wenn aktiv: Tatsächlich eingefrorenes Intervall anzeigen
                 displayStartStr = formatClock(state.startTimestamp);
                 displayEndStr = formatClock(state.endTimestamp);
                 prefix = "Intervall";
             } else {
-                // Wenn gestoppt: Dynamische Vorschau auf "Jetzt" bezogen
                 const now = new Date();
                 const remainingSec = state.currentMode === 'focus' ? state.focusRemaining : state.breakRemaining;
                 const endProj = new Date(now.getTime() + remainingSec * 1000);
-
                 displayStartStr = `Jetzt (${formatClock(now)})`;
                 displayEndStr = formatClock(endProj);
                 prefix = "Projektion";
             }
 
-            // In die entsprechenden DOM-Container schreiben
             if (state.currentMode === 'focus') {
                 document.getElementById('bounds-focus').innerText = `${prefix}: ${displayStartStr} ➔ ${displayEndStr}`;
                 document.getElementById('bounds-focus').style.opacity = "1.0";
@@ -892,7 +883,6 @@
             isEditingInline = true;
             pauseTimer();
 
-            // Zeitstempel zurücksetzen, um Verwirrung während des Editiervorgangs vorzubeugen
             state.startTimestamp = null;
             state.endTimestamp = null;
 
@@ -900,28 +890,23 @@
             const currentSeconds = mode === 'focus' ? state.focusDuration : state.breakDuration;
             const currentFormatted = formatTime(currentSeconds);
 
-            // Container für Input und Hilfetext
             const wrapper = document.createElement('div');
             wrapper.className = 'relative flex flex-col items-center justify-center';
 
-            // Dynamisches Texteingabefeld erzeugen
             const input = document.createElement('input');
             input.type = 'text';
             input.value = currentFormatted;
             input.placeholder = "MM:SS oder MMSS";
             
-            // Perfekte Typographie-Einbindung
             input.className = 'bg-transparent text-center focus:outline-none font-light border-b-2 border-dashed border-current w-[6ch] timer-digits transition-all duration-200';
             input.style.fontSize = 'inherit';
             input.style.fontFamily = 'inherit';
             input.style.color = 'inherit';
 
-            // Hilfetext direkt unter dem Eingabefeld einblenden
             const hint = document.createElement('div');
             hint.className = 'absolute -bottom-10 left-1/2 -translate-x-1/2 text-xs md:text-sm font-normal tracking-wide opacity-90 py-1.5 px-3.5 rounded bg-stone-950 text-stone-300 border border-stone-800 pointer-events-none whitespace-nowrap z-30 shadow-md';
             hint.innerText = "Enter zum Speichern (z.B. 1530 für 15:30, oder 25 für 25:00)";
 
-            // Events isolieren
             input.addEventListener('click', (e) => e.stopPropagation());
             input.addEventListener('dblclick', (e) => e.stopPropagation());
 
@@ -962,14 +947,7 @@
                     state.breakRemaining = totalSeconds;
                 }
 
-                localStorage.setItem('split_timer_v1_9', JSON.stringify({
-                    fD: state.focusDuration, bD: state.breakDuration,
-                    fAT: state.focusAmbientType, bAT: state.breakAmbientType,
-                    fAV: state.focusAmbientVolume, bAV: state.breakAmbientVolume,
-                    fES: state.focusEndSound, bES: state.breakEndSound,
-                    theme: state.activeTheme
-                }));
-
+                saveLocalState();
                 isEditingInline = false;
                 updateDisplay();
             };
@@ -980,22 +958,14 @@
             };
 
             input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    saveAndExit();
-                } else if (e.key === 'Escape') {
-                    cancelEdit();
-                }
+                if (e.key === 'Enter') saveAndExit();
+                else if (e.key === 'Escape') cancelEdit();
             });
 
-            input.addEventListener('blur', () => {
-                saveAndExit();
-            });
+            input.addEventListener('blur', () => saveAndExit());
 
-            // Container befüllen
             wrapper.appendChild(input);
             wrapper.appendChild(hint);
-
-            // In den DOM einhängen
             displayEl.innerHTML = '';
             displayEl.appendChild(wrapper);
             
@@ -1003,28 +973,31 @@
             input.select();
         }
 
-        // --- SETTINGS MODAL ---
+        // --- SETTINGS MODAL & STATE ---
+        function saveLocalState() {
+            localStorage.setItem('split_timer_v1_9', JSON.stringify({
+                fD: state.focusDuration, bD: state.breakDuration,
+                fAT: state.focusAmbientType, bAT: state.breakAmbientType,
+                fAV: state.focusAmbientVolume, bAV: state.breakAmbientVolume,
+                fES: state.focusEndSound, bES: state.breakEndSound,
+                theme: state.activeTheme, pO: state.panelOrder
+            }));
+        }
+
         function toggleSettingsModal(s) {
             const m = document.getElementById('modal-settings');
             if (s) {
-                // Grunddaten einlesen
                 document.getElementById('input-focus-time').value = state.focusDuration / 60;
                 document.getElementById('input-break-time').value = state.breakDuration / 60;
-                
-                // Getrennte Ambient Dropdowns
                 document.getElementById('select-focus-ambient-type').value = state.focusAmbientType;
                 document.getElementById('select-break-ambient-type').value = state.breakAmbientType;
-                
-                // Getrennte Lautstärken
                 document.getElementById('range-focus-ambient-vol').value = state.focusAmbientVolume * 100;
                 document.getElementById('range-break-ambient-vol').value = state.breakAmbientVolume * 100;
-                
                 document.getElementById('label-focus-ambient-vol').innerText = `${Math.round(state.focusAmbientVolume * 100)}%`;
                 document.getElementById('label-break-ambient-vol').innerText = `${Math.round(state.breakAmbientVolume * 100)}%`;
-                
-                // Getrennte Wecker-Sounds
                 document.getElementById('select-focus-end-sound').value = state.focusEndSound;
                 document.getElementById('select-break-end-sound').value = state.breakEndSound;
+                document.getElementById('select-panel-order').value = state.panelOrder;
 
                 m.classList.remove('opacity-0', 'pointer-events-none');
                 m.firstElementChild.classList.remove('scale-95');
@@ -1036,20 +1009,17 @@
         }
 
         function saveSettings() {
-            // Beende laufende Modal-Vorschau vor dem Übernehmen
             stopPreviewAmbient();
 
             state.focusDuration = (parseInt(document.getElementById('input-focus-time').value) || 25) * 60;
             state.breakDuration = (parseInt(document.getElementById('input-break-time').value) || 5) * 60;
-            
             state.focusAmbientType = document.getElementById('select-focus-ambient-type').value;
             state.breakAmbientType = document.getElementById('select-break-ambient-type').value;
-            
             state.focusAmbientVolume = document.getElementById('range-focus-ambient-vol').value / 100;
             state.breakAmbientVolume = document.getElementById('range-break-ambient-vol').value / 100;
-            
             state.focusEndSound = document.getElementById('select-focus-end-sound').value;
             state.breakEndSound = document.getElementById('select-break-end-sound').value;
+            state.panelOrder = document.getElementById('select-panel-order').value;
             
             if (!state.isRunning) {
                 state.focusRemaining = state.focusDuration;
@@ -1058,14 +1028,8 @@
                 state.endTimestamp = null;
             }
 
-            localStorage.setItem('split_timer_v1_9', JSON.stringify({
-                fD: state.focusDuration, bD: state.breakDuration,
-                fAT: state.focusAmbientType, bAT: state.breakAmbientType,
-                fAV: state.focusAmbientVolume, bAV: state.breakAmbientVolume,
-                fES: state.focusEndSound, bES: state.breakEndSound,
-                theme: state.activeTheme
-            }));
-            
+            saveLocalState();
+            applyPanelOrder();
             updateDisplay(); 
             toggleSettingsModal(false);
             
@@ -1076,23 +1040,17 @@
         function triggerAlarmPreview(phase) {
             initAudio();
             const soundElement = document.getElementById(`select-${phase}-end-sound`);
-            const selectedSound = soundElement.value;
-            playAlarmSound(selectedSound);
+            playAlarmSound(soundElement.value);
         }
 
         function togglePreviewAmbient(phase) {
             initAudio();
-            
-            // Wenn bereits ein Preview für exakt diese Phase läuft -> Stoppen
             if (activePreviewPhase === phase) {
                 stopPreviewAmbient();
                 return;
             }
-            
-            // Vorherige Previews beenden
             stopPreviewAmbient();
             
-            // Lese die aktuellen Dropdown- und Lautstärke-Werte direkt aus dem Modal-DOM aus
             const type = document.getElementById(`select-${phase}-ambient-type`).value;
             const volume = parseFloat(document.getElementById(`range-${phase}-ambient-vol`).value) / 100;
             
@@ -1109,15 +1067,12 @@
             
             previewSource.start();
             activePreviewPhase = phase;
-            
             updatePreviewButtonsUI();
         }
 
         function stopPreviewAmbient() {
             if (previewSource) {
-                try {
-                    previewSource.stop();
-                } catch(e) {}
+                try { previewSource.stop(); } catch(e) {}
                 previewSource = null;
             }
             activePreviewPhase = null;
@@ -1142,11 +1097,8 @@
             });
         }
 
-        // Aktualisiert die dynamische Start/End-Projektionsvorschau sekündlich im Ruhezustand
         setInterval(() => {
-            if (!state.isRunning && !isEditingInline) {
-                updateDisplay();
-            }
+            if (!state.isRunning && !isEditingInline) updateDisplay();
         }, 1000);
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1160,33 +1112,31 @@
                 state.breakAmbientVolume = saved.bAV !== undefined ? saved.bAV : 0.3;
                 state.focusEndSound = saved.fES || 'bell';
                 state.breakEndSound = saved.bES || 'harp';
+                state.panelOrder = saved.pO || 'focus-first';
                 setTheme(saved.theme || 'sea');
             } else {
-                setTheme('sea'); // Startet standardmäßig mit dem blauen Theme
+                setTheme('sea');
             }
             state.focusRemaining = state.focusDuration;
             state.breakRemaining = state.breakDuration;
             
+            applyPanelOrder();
             lucide.createIcons();
             updateDisplay();
 
-            // Live-Labels und Echtzeit-Volumenanpassung während der Soundvorschau registrieren
             ['focus', 'break'].forEach(phase => {
                 const selectEl = document.getElementById(`select-${phase}-ambient-type`);
                 const rangeEl = document.getElementById(`range-${phase}-ambient-vol`);
                 
                 selectEl.addEventListener('change', () => {
                     if (activePreviewPhase === phase) {
-                        // Falls die Vorschau läuft und sich der Typ ändert: Sound wechseln
-                        togglePreviewAmbient(phase); // Stoppen
-                        togglePreviewAmbient(phase); // Mit neuem Typ starten
+                        togglePreviewAmbient(phase); 
+                        togglePreviewAmbient(phase); 
                     }
                 });
                 
                 rangeEl.addEventListener('input', (e) => {
                     document.getElementById(`label-${phase}-ambient-vol`).innerText = `${e.target.value}%`;
-                    
-                    // Falls die Vorschau aktiv läuft: Direkt das Gain-Node anpassen
                     if (activePreviewPhase === phase && previewGainNode && audioCtx) {
                         const newVol = parseFloat(e.target.value) / 100;
                         previewGainNode.gain.setValueAtTime(newVol, audioCtx.currentTime);
@@ -1199,9 +1149,9 @@
 </html>
 <!--
 --- CHANGE LOG ---
-v2.3.0:
-- Drei zusätzliche, vollständig rauschfreie, synthetisierte Lofi Ambient Tracks hinzugefügt:
-  1. "Lofi Nostalgia 🍂" mit sanfter analoger Magnetband-Vibrato-Modulation (Wow & Flutter).
-  2. "Cozy Café ☕" mit warmen Jazz-Akkorden und einer dezenten, weichen Rhodes-Glockenmelodie.
-  3. "Sunset Lounge 🌅" mit atmosphärischen Cmaj7-Fmaj7 Akkordfolgen und einem sehr langsamen, entspannten Modulations-Filter-Sweep.
+v2.5.1:
+- BUGFIX: Fehlerhafte Kommentar-Syntax (die den Code unbrauchbar machte) entfernt.
+- FEATURE: Zeitzurücksetzung für Endlos-Loop eingebaut. Die jeweils beendete Phase wird nun in Sekundenbruchteilen wieder auf den Ausgangswert gesetzt, während die andere startet.
+- FEATURE: Auswahl der Panel-Reihenfolge (Fokus Zuerst oder Pause Zuerst) zu den Einstellungen hinzugefügt. Das UI ordnet sich dynamisch um.
+- UI: Hover-Bereich des verkleinerten Menüs vergrößert, damit es leichter auszulösen ist.
 -->
