@@ -1,7 +1,7 @@
 {
-  "name": "Brocus Focus Timer",
+  "name": "Brocus",
   "short_name": "Brocus",
-  "description": "Ein Pausen- und Fokus-Timer.",
+  "description": "A break and focus timer.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0c0a09",
