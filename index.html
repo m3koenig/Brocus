@@ -103,9 +103,17 @@
 
     <!-- FLOATING BEDIENTASTEN (Dynamisch einklappend) -->
     <!-- Großer Hit-Bereich (pb-6 pt-12 px-12), damit das Menü leicht mit der Maus/Finger erwischt werden kann -->
-    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 z-20 pb-6 pt-12 px-12 group cursor-default">
+    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 z-20 pb-2 pt-45 px-12 group cursor-default ">
         <!-- Das eigentliche Menü. Im Grundzustand skaliert auf 75% und halb transparent. -->
-        <div class="controls-wrapper flex items-center justify-center gap-2 md:gap-3 bg-stone-900/90 backdrop-blur-md px-4 py-2 md:px-5 md:py-3 rounded-full border border-stone-800 shadow-2xl transition-all duration-300 ease-out transform scale-75 opacity-50 group-hover:scale-100 group-hover:opacity-100 focus-within:scale-100 focus-within:opacity-100">
+        <div class="
+            controls-wrapper flex items-center justify-center gap-2
+            md:gap-3 bg-stone-900/90 backdrop-blur-md px-4 py-2 
+            md:px-5 
+            md:py-3 rounded-full border border-stone-800 shadow-2xl transition-all duration-300 ease-out transform scale-75 translate-y-6 opacity-40
+            group-hover:scale-100
+            group-hover:translate-y-0
+            group-hover:opacity-100 
+            focus-within:scale-100 focus-within:opacity-100">
             <button onclick="toggleSettingsModal(true)" class="control-button p-2 md:p-3 text-stone-400 hover:text-white transition-colors outline-none" title="Einstellungen">
                 <i data-lucide="settings" class="control-icon w-5 h-5 md:w-6 md:h-6"></i>
             </button>
