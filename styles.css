@@ -1,0 +1,64 @@
+:root {
+    /* Standard-Theme jetzt: Deep Sea (Blau) */
+    --focus-bg: #1e3a8a;
+    --focus-text: #bfdbfe;
+    --break-bg: #bfdbfe;
+    --break-text: #1e3a8a;
+    --accent: #10b981; /* emerald-500 */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    background-color: #0c0a09;
+}
+
+.timer-digits {
+    font-variant-numeric: tabular-nums;
+}
+
+.transition-dim {
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.8s ease;
+}
+
+/* Dynamische Panel-Farben */
+#panel-focus { background-color: var(--focus-bg); color: var(--focus-text); }
+#panel-break { background-color: var(--break-bg); color: var(--break-text); }
+
+/* Custom Scrollbar für Settings */
+.settings-scroll::-webkit-scrollbar { width: 4px; }
+.settings-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+
+#main-container { min-height: 0; overflow-y: auto; }
+section { min-height: 0; }
+
+@media (max-width: 640px) {
+    .panel-circle { width: 5rem; height: 5rem; }
+    .panel-icon { width: 2rem; height: 2rem; }
+    .timer-display { font-size: 4.25rem; }
+    .bounds-text { font-size: 0.75rem; }
+    #bounds-focus,
+    #bounds-break { display: none; }
+}
+
+@media (max-height: 700px) {
+    .panel-circle { width: 8rem; height: 8rem; }
+    .panel-icon { width: 2.5rem; height: 2.5rem; }
+    .timer-display { font-size: 3.5rem; }
+    .bounds-text { font-size: 0.7rem; }
+    /* #bounds-focus { display: none; } */
+    .controls-wrapper { gap: 0.5rem; padding: 0.6rem 0.75rem; }
+    .control-button { padding: 0.45rem; }
+    .control-icon { width: 1.05rem; height: 1.05rem; }
+}
+
+/* Verhindert die unschönen Pfeiltasten in der Zahlen-Eingabe */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
