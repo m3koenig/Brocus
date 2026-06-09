@@ -1,4 +1,4 @@
-# 🧠 Brocus - Focus & Break Timer
+# 🧠 Brocus - Break & Focus Timer
 
 A beautiful, feature-rich split-screen productivity timer designed to help you maximize focus and manage breaks effectively. **Brocus** combines the Pomodoro technique with ambient soundscapes, customizable themes, and an intuitive interface.
 
@@ -213,24 +213,7 @@ Brocus uses the **Web Audio API** to synthesize all ambient sounds and alarms in
 
 ---
 
-## 🚀 Roadmap
-
-Future enhancements might include:
-- 📊 Session statistics & tracking
-- 🎯 Goal setting and daily targets
-- 📴 Do Not Disturb mode
-- 🌍 Multi-language support
-- 🔔 Browser notifications
-- ☁️ Cloud sync (optional)
-
----
-
-## ❤️ Made with Focus
-
-Built with attention to detail to help you focus better.
-
 **[Start your session →](https://m3koenig.github.io/Brocus/)**
 
----
 
 *Brocus: Where focus meets breaks, and productivity meets peace. 🧠✨*
